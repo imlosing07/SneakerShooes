@@ -14,31 +14,9 @@ export const providersList = {
     isAvailable: !!process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_ID !== '',
     optional: false,
   },
-  googleAnalytics: {
-    name: "Google Analytics",
-    isAvailable: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID !== undefined,
-    optional: true,
-    id: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || '',
-  },
-  googleTagManager: {
-    name: "Google Tag Manager",
-    isAvailable: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID !== undefined,
-    id : process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID || '',
-    optional: true,
-  },
   landingPage: {
     name: "Landing Page",
     isAvailable: true,
     optional: false,
-  },
-  stripe: {
-    name: "Stripe",
-    isAvailable: process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY !== undefined,
-    optional: true,
-  },
-  mailgun: {
-    name: "Mailgun",
-    isAvailable: process.env.MAILGUN_API_KEY !== undefined,
-    optional: true,
-  },
+  }
 }

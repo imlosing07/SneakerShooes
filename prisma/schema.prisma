@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,28 +7,110 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProductCategory {
+  FORMAL
+  SNEAKERS
+  SANDALS
+  BOOTS
+  ATHLETIC
+  CASUAL
+  SLIPPERS
+  OUTDOOR
+}
+
+enum Genre {
+  WOMENS
+  MENS
+  KIDS
+  UNISEX
+}
+
 model User {
-  id            String          @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String         @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  sessions      Session[] 
-  company       Company?   @relation(fields: [companyId], references: [id])
-  companyId     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @default(now())
+  sessions      Session[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  WishlistItem  WishlistItem[]
 }
 
-model Company {
-  id          String    @id @default(cuid())
+model Product {
+  id          String          @id @default(uuid())
   name        String
-  users       User[]    @relation
-  transactions PaymentTransaction[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt @default(now())
+  description String? // Ahora opcional para consistencia con la interfaz
+  category    ProductCategory
+  genre       Genre
+  sizes       Size[]
+  price       Decimal         @db.Decimal(10, 2) // Cambiado a Decimal para mayor precisión
+  salePrice   Decimal?        @db.Decimal(10, 2) // Opcional para descuentos
+  featured    Boolean         @default(false)
+  isNew       Boolean         @default(true)
+  brandId     String
+  brand       Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  images      ProductImage[]
+
+  wishlistItems WishlistItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([brandId])
+  @@index([category])
+  @@index([genre])
 }
+
+model Size {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  value     String // Valor de la talla (ej. "42", "8.5")
+  inventory Int // Cantidad disponible
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, value]) // No puede haber tallas duplicadas para el mismo producto
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  url       String // URL de la imagen en Cloudinary
+  position  Int // Orden o posición de la imagen (ej. 1 para la principal, 2 para la secundaria, etc.)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, position]) // Asegura posición única por producto
+  @@index([productId])
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  logoUrl   String? // URL del logo
+  products  Product[] // Relación inversa
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId]) // Un usuario no puede tener el mismo producto repetido en su wishlist
+  @@index([userId])
+  @@index([productId])
+}
+
 model Account {
   userId            String
   type              String
@@ -43,38 +123,32 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
+  @@index([userId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
- 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
- 
-  @@id([identifier, token])
+
+  @@index([userId])
 }
 
-model PaymentTransaction {
-  id            String    @id @default(cuid())
-  company       Company   @relation(fields: [companyId], references: [id])
-  companyId     String
-  raw           Json
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt @default(now())
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
 }

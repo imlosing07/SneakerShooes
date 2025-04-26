@@ -1,86 +1,37 @@
-// clean architecture : repository layer is where you want to put all your database logic, this way you could easily change the database without changing the use-case logic
-// import { PrismaClient } from '@prisma/client';
+// user.repository.ts
 import { UserPort } from './user.port';
 import { User, UserProps } from './user.entity';
-import { prismaClientGlobal } from '@/infra/prisma';
+import { prismaClientGlobal } from '@/src/app/lib/prisma';
 
 const prisma = prismaClientGlobal;
 
 export class UserRepository implements UserPort {
   async getUserById(id: string): Promise<User | undefined> {
-    const userRecord = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!userRecord) {
-      return undefined;
-    }
-
-    return new User({
-      id: userRecord.id,
-      name: userRecord.name,
-      email: userRecord.email,
-      updatedAt: userRecord.updatedAt,
-      createdAt: userRecord.createdAt,
-      emailVerified: userRecord.emailVerified,
-      companyId: userRecord.companyId,
-      image: userRecord.image,
-    });
+    const userRecord = await prisma.user.findUnique({ where: { id } });
+    return userRecord ? this.mapToEntity(userRecord) : undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const userRecord = await prisma.user.findFirst({
-      where: { email },
-    });
-
-    if (!userRecord) {
-      return undefined;
-    }
-
-    return new User({
-      id: userRecord.id,
-      name: userRecord.name,
-      email: userRecord.email,
-      updatedAt: userRecord.updatedAt,
-      createdAt: userRecord.createdAt,
-      emailVerified: userRecord.emailVerified,
-      image: userRecord.image,
-    });
+    const userRecord = await prisma.user.findFirst({ where: { email } });
+    return userRecord ? this.mapToEntity(userRecord) : undefined;
   }
 
   async createUser(user: Omit<UserProps, 'id' | 'updatedAt' | 'createdAt' | 'emailVerified' | 'image'>): Promise<User> {
     const userRecord = await prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email,
-        updatedAt: new Date()
-      },
+      data: { ...user, createdAt: new Date(), updatedAt: new Date() },
     });
-
-    return new User({
-      id: userRecord.id,
-      name: userRecord.name,
-      email: userRecord.email,
-      updatedAt: userRecord.updatedAt,
-      createdAt: userRecord.createdAt,
-      emailVerified: userRecord.emailVerified,
-      image: userRecord.image,
-    });
+    return this.mapToEntity(userRecord);
   }
 
-  async updateUser(user: User, newUserProps: Omit<UserProps, 'id' | 'createdAt'>): Promise<User> {
-    const userRecord = await prisma.user.update({
-      where: { id: user.id() },
-      data: {
-        ...user.props,
-        ...newUserProps,
-        updatedAt: new Date(),
-      },
-    });
-
+  private mapToEntity(record: any): User {
     return new User({
-      ...userRecord
+      id: record.id,
+      name: record.name,
+      email: record.email,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      emailVerified: record.emailVerified,
+      image: record.image,
     });
   }
-
 }

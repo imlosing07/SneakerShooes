@@ -4,7 +4,6 @@ export interface UserProps {
   email: string;
   emailVerified?: Date | null;
   image?: string | null;
-  companyId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* remove any margin that browsers add to body */
+  margin: 0;
+}
