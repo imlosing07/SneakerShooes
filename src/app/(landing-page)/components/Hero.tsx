@@ -1,68 +1,86 @@
-"use client"
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import ImagenHero from "../public/images/hero-image.webp";
-import ImagenHero2 from "../public/images/hero-image-2.webp";
+"use client";
+import { useEffect, useState } from "react";
 
-export default function HeroSection() {
-  const [currentImage, setCurrentImage] = useState(ImagenHero);
-  const [active, setActive] = useState(false);
+function HeroSection() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      desktopImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761054065/bgDiadora.jpg",
+      mobileImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761054162/bgDiadoraMobile.jpg",
+      title: "Diadora",
+      description: "Descubre nuestra exclusiva colección de calzado importado",
+      ctaPrimary: { text: "Ver Colección", href: "#productos" },
+      ctaSecondary: { text: "Explorar", href: "#marcas" }
+    },
+    {
+      desktopImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761052618/bgConverse.jpg",
+      mobileImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761052517/bgConverseMobile.jpg",
+      title: "Converse",
+      description: "Explora las últimas tendencias en calzado urbano",
+      ctaPrimary: { text: "Descubrir", href: "#productos" },
+      ctaSecondary: { text: "Ver Todo", href: "#catalogo" }
+    }
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActive(false);
-      setTimeout(() => {
-        setCurrentImage((prev) => (prev === ImagenHero ? ImagenHero2 : ImagenHero));
-        setActive(true);
-      }, 500); // Tiempo antes de cambiar la imagen
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
+  const currentData = slides[currentSlide];
+
   return (
-    <section className="relative parallax-bg pt-24 pb-16 text-white bg-cover bg-center overflow-hidden">
-      {/* Overlay para mejorar legibilidad */}
-      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+    <section className="relative h-screen overflow-hidden">
+      <div className="absolute inset-0 bg-black/40 z-10" />
 
-      {/* Imagen optimizada con next/image con cambio dinámico */}
-      <Image
-        src={currentImage}
-        alt="Hero Background"
-        fill
-        quality={70}
-        className={`image-transition ${active ? "active" : ""}`}
-        priority
-      />
+      <picture className="absolute inset-0 w-full h-full">
+        <source media="(max-width: 767px)" srcSet={currentData.mobileImage} />
+        <source media="(min-width: 768px)" srcSet={currentData.desktopImage} />
+        <img
+          src={currentData.desktopImage}
+          alt="Hero Background"
+          className="w-full h-full object-cover"
+        />
+      </picture>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-10 md:mb-0 animate-fade-in-up">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Premium Imported Footwear</h1>
-            <p className="text-lg mb-8 text-gray-300 max-w-md">
-              Discover our exclusive collection of imported formal shoes and casual sneakers, crafted for those who appreciate quality and style.
-            </p>
-            <div className="flex space-x-4">
-              <a href="#zapatos" className="bg-white text-gray-900 px-6 py-3 rounded-md font-medium hover:bg-gray-100 transition shadow-lg">
-                Shop Formal
+      <div className="relative z-20 h-full flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="text-white space-y-6 max-w-2xl">
+            <h1 className="text-5xl md:text-6xl font-bold">{currentData.title}</h1>
+            <p className="text-xl text-gray-200">{currentData.description}</p>
+            <div className="flex flex-wrap gap-4 pt-4">
+              <a
+                href={currentData.ctaPrimary.href}
+                className="bg-white text-black px-8 py-3 rounded font-medium hover:bg-gray-100 transition"
+              >
+                {currentData.ctaPrimary.text}
               </a>
-              <a href="#zapatillas" className="bg-transparent border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white hover:text-gray-900 transition shadow-lg">
-                Shop Casual
+              <a
+                href={currentData.ctaSecondary.href}
+                className="border-2 border-white text-white px-8 py-3 rounded font-medium hover:bg-white hover:text-black transition"
+              >
+                {currentData.ctaSecondary.text}
               </a>
             </div>
           </div>
-          <div className="md:w-1/2 flex justify-center relative animate-fade-in">
-            <div className="absolute -top-10 -left-10 w-64 h-64 bg-gradient-to-r from-gray-800 to-black rounded-full filter blur-3xl opacity-30"></div>
-            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-gradient-to-r from-gray-700 to-gray-900 rounded-full filter blur-3xl opacity-30"></div>
-            <Image
-              src="https://www.plasticaucho.com.pe/blog/wp-content/uploads/2021/02/C%C3%B3mo-iniciar-un-negocio-enfocado-en-la-venta-de-zapatillas-en-Lima.jpg"
-              alt="Premium Shoes Collection"
-              width={500}
-              height={400}
-              className="relative z-10 rounded-lg shadow-2xl"
+        </div>
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-12' : 'bg-white/50 w-2'
+                }`}
             />
-          </div>
+          ))}
         </div>
       </div>
     </section>
   );
-};
+}
+
+export default HeroSection;

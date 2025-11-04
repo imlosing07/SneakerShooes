@@ -1,11 +1,11 @@
 // src/lib/validation/product.schema.ts
 import { z } from 'zod';
-import { ProductCategory, Genre } from '@prisma/client';
+import { ProductCategory, Genre } from '@/src/app/lib/constants/product-constants';
 
 // Esquemas para datos anidados
 export const productImageSchema = z.object({
-  url: z.string().url('URL de imagen inválida'),
-  position: z.number().int().min(0, 'La posición debe ser un número entero positivo')
+  originalUrl: z.string().url('URL de imagen inválida'),
+  standardUrl: z.string().url('URL de imagen inválida')
 });
 
 export const productSizeSchema = z.object({
@@ -32,8 +32,6 @@ const productBaseSchema = z.object({
 
 // Esquema para creación de producto
 export const createProductSchema = productBaseSchema.extend({
-  images: z.array(productImageSchema)
-    .min(1, 'Se requiere al menos una imagen'),
   sizes: z.array(productSizeSchema)
     .min(1, 'Se requiere al menos una talla')
 });
@@ -42,8 +40,6 @@ export const createProductSchema = productBaseSchema.extend({
 export const updateProductSchema = productBaseSchema
   .partial() // Hace todos los campos opcionales
   .extend({
-    id: z.string().uuid('ID de producto inválido'),
-    images: z.array(productImageSchema).optional(),
     sizes: z.array(productSizeSchema).optional()
   });
 

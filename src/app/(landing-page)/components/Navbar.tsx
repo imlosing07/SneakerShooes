@@ -1,25 +1,22 @@
 "use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default function Navbar() {
+function Navbar() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 100) {
-        setShowNavbar(false); // Ocultar si baja
+        setShowNavbar(false);
       } else {
-        setShowNavbar(true); // Mostrar si sube
+        setShowNavbar(true);
       }
       setLastScrollY(window.scrollY);
     };
 
-    const handleMouseMove = (e:any) => {
-      if (e.clientY < 80) {
-        setShowNavbar(true); // Aparece si el mouse está cerca de la parte superior
-      }
+    const handleMouseMove = (e: MouseEvent) => {
+      if (e.clientY < 80) setShowNavbar(true);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -32,34 +29,34 @@ export default function Navbar() {
   }, [lastScrollY]);
 
   return (
-    <nav
-      className={`bg-white shadow fixed w-full z-50 transition-transform duration-300 ${
-        showNavbar ? "translate-y-0" : "-translate-y-full"
-      }`}
-    >
+    <nav className={`fixed w-full bg-white shadow-sm transition-transform duration-300 z-50 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
-                <span className="text-2xl font-bold">
-                  Sneekers<span className="text-slate-500">Hooes</span>
-                </span>
-              </Link>
-            </div>
+        <div className="flex justify-between items-center h-16">
+          <div className="text-2xl font-bold">
+            Sneakers<span className="text-gray-400">Hooes</span>
           </div>
-          <div className="hidden md:flex items-center space-x-4 lg:flex-1 lg:justify-center">
-            <Link href="#" className="text-gray-900 hover:text-gray-600 px-3 py-2 text-sm font-medium">TOP</Link>
-            <Link href="/hombre" className="text-gray-900 hover:text-gray-600 px-3 py-2 text-sm font-medium">Hombre</Link>
-            <Link href="/mujer" className="text-gray-900 hover:text-gray-600 px-3 py-2 text-sm font-medium">Mujer</Link>
-            <Link href="/ninos" className="text-gray-900 hover:text-gray-600 px-3 py-2 text-sm font-medium">Niños</Link>
+
+          <div className="hidden md:flex space-x-8">
+            <a href="#top" className="text-gray-700 hover:text-black transition">TOP</a>
+            <a href="#hombre" className="text-gray-700 hover:text-black transition">Hombre</a>
+            <a href="#mujer" className="text-gray-700 hover:text-black transition">Mujer</a>
+            <a href="#ninos" className="text-gray-700 hover:text-black transition">Niños</a>
+            <a href="#formal" className="text-gray-700 hover:text-black transition">Formal</a>
           </div>
-          <div className="hidden md:flex items-center lg:flex-1 lg:justify-end lg:space-x-3">
-            <Link href="/login" className="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-700">Login</Link>
-            <Link href="/signup" className="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-700">Signup</Link>
+
+          <div className="flex space-x-4">
+            <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black transition">
+              Login
+            </button>
+            <button className="px-4 py-2 text-sm font-medium bg-black text-white rounded hover:bg-gray-800 transition">
+              Signup
+            </button>
           </div>
         </div>
       </div>
     </nav>
   );
 }
+
+export default Navbar;

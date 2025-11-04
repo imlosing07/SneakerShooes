@@ -1,35 +1,52 @@
-// app/api/products/[id]/images/route.ts
+// src/app/api/products/[id]/images/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { addProductImage } from '@/src/services/product';
 
-// Usamos el singleton de Prisma con el repositorio y creamos el servicio
-const productRepo = new ProductRepository();
-const productService = new ProductService(productRepo);
-
-// Manejar solicitudes para imágenes de producto
 export async function POST(
-  request: NextRequest, 
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const { imageUrl, position } = await request.json();
-    const product = await productService.addProductImage(params.id, imageUrl, position);
-    return NextResponse.json({ product });
-  } catch (error) {
-    console.error('Error in POST /api/products/[id]/images:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
 
-export async function PUT(
-  request: NextRequest, 
-  { params }: { params: { id: string } }
-) {
+  const { id } = await params;
+
   try {
-    const { imagePositions } = await request.json();
-    const product = await productService.reorderProductImages(params.id, imagePositions);
-    return NextResponse.json({ product });
-  } catch (error) {
-    console.error('Error in PUT /api/products/[id]/images:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const body = await request.json();
+    const { originalUrl, standardUrl, publicId } = body;
+
+    // Validación básica
+    if (!originalUrl || !standardUrl || !publicId) {
+      return NextResponse.json(
+        { error: 'Missing required image data (originalUrl, standardUrl, publicId)' },
+        { status: 400 }
+      );
+    }
+
+    // Agregar imagen al producto usando el servicio
+    const newImage = await addProductImage(id, {
+      originalUrl,
+      standardUrl,
+      publicId
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: newImage
+    });
+
+  } catch (error: any) {
+    console.error('Error adding product image:', error);
+    
+    // Manejar errores específicos
+    if (error.message.includes('not found')) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Failed to add product image' },
+      { status: 500 }
+    );
   }
 }

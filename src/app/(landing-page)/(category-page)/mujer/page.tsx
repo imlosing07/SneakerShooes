@@ -10,24 +10,30 @@ import Carousel from '../components/Carousel';
 import { ProductCard } from '../components/ProductCard';
 import { ProductCatalog } from '../components/ProductCatalog';
 import NewsletterForm from '../components/NewsletterForm';
+import { ProductCategory, Genre, Size, Brand, ProductImage } from '@prisma/client';
 
 // Tipos
-interface Sneaker {
-  id: number;
+interface Product {
+  id: string;
   name: string;
-  brand: string;
+  description?: string | null;
+  category: ProductCategory;
+  genre: Genre;
+  sizes: Size[];
   price: number;
-  discountPrice?: number;
-  imageUrl: string;
-  colors: string[];
-  isNew?: boolean;
-  isTrending?: boolean;
-  isOnSale?: boolean;
-  rating: number;
+  salePrice?: number | null;
+  featured: boolean;
+  isNew: boolean;
+  brandId: string;
+  brand?: Brand;
+  images: ProductImage[];
+  wishlistItems?: any[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Datos de ejemplo
-const popularSneakers: Sneaker[] = [
+const popularSneakers: Product[] = [
   {
     id: 1,
     name: "Cloud Runner",
@@ -63,7 +69,7 @@ const popularSneakers: Sneaker[] = [
 ];
 
 // Catálogo completo
-export const allSneakers: Sneaker[] = [
+export const allSneakers: Product[] = [
   ...popularSneakers,
   {
     id: 4,
@@ -116,7 +122,7 @@ export const allSneakers: Sneaker[] = [
 ];
 
 export default function WomenSneakersPage() {
-  const [filteredSneakers, setFilteredSneakers] = useState<Sneaker[]>(allSneakers);
+  const [filteredSneakers, setFilteredSneakers] = useState<Product[]>(allSneakers);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({
     brand: '',
@@ -133,34 +139,27 @@ export default function WomenSneakersPage() {
     if (searchTerm) {
       result = result.filter(sneaker =>
         sneaker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sneaker.brand.toLowerCase().includes(searchTerm.toLowerCase())
+        sneaker.brand?.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Filtro por marca
     if (filters.brand) {
-      result = result.filter(sneaker => sneaker.brand === filters.brand);
+      result = result.filter(sneaker => sneaker.brand?.name === filters.brand);
     }
 
     // Filtro por rango de precio
     if (filters.priceRange) {
       const [min, max] = filters.priceRange.split('-').map(Number);
       result = result.filter(sneaker => {
-        const price = sneaker.discountPrice || sneaker.price;
+        const price = sneaker.salePrice || sneaker.price;
         return price >= min && price <= max;
       });
     }
 
-    // Filtro por color
-    if (filters.color) {
-      result = result.filter(sneaker =>
-        sneaker.colors.includes(filters.color)
-      );
-    }
-
     // Filtro por ofertas
     if (filters.isOnSale) {
-      result = result.filter(sneaker => sneaker.isOnSale);
+      result = result.filter(sneaker => sneaker.salePrice);
     }
 
     setFilteredSneakers(result);
@@ -178,10 +177,10 @@ export default function WomenSneakersPage() {
   };
 
   // Obtener sneakers en oferta
-  const onSaleSneakers = allSneakers.filter(sneaker => sneaker.isOnSale);
+  const onSaleSneakers = allSneakers.filter(sneaker => sneaker.salePrice);
 
   // Obtener sneakers trending
-  const trendingSneakers = allSneakers.filter(sneaker => sneaker.isTrending);
+  const trendingSneakers = allSneakers.filter(sneaker => sneaker.isNew);
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 pt-20">

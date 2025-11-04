@@ -6,9 +6,7 @@ import { getBrands, createBrand } from '@/src/services/brand'
 export async function GET(request: NextRequest) {
   try {
     const results = await getBrands();
-    console.log('Api results brands:', results);
-
-    const resultsData = results.map((brand) => {
+    const resultsData = results.brands.map((brand) => {
       return {
         id: brand.id,
         name: brand.name,
@@ -16,8 +14,10 @@ export async function GET(request: NextRequest) {
       }
     }
     )
+    const pagination = results.pagination;
+    const total = results.pagination.total;
 
-    return NextResponse.json(resultsData, { status: 200 })
+    return NextResponse.json({ brands: resultsData, pagination, total }, { status: 200 })
   } catch (error) {
     console.error('Error in GET /api/brands:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

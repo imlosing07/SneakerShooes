@@ -80,7 +80,6 @@ export default function HombrePage() {
                                         <div className="flex flex-col md:flex-row items-center gap-8 bg-gray-900 rounded-2xl overflow-hidden p-8">
                                             <div className="product-image-container md:w-1/2 rounded-xl overflow-hidden">
                                                 <img
-                                                    src={sneaker.imageUrl}
                                                     alt={sneaker.name}
                                                     className="product-image w-full h-[300px] md:h-[400px] object-cover"
                                                 />
@@ -88,21 +87,13 @@ export default function HombrePage() {
                                             <div className="md:w-1/2 space-y-6">
                                                 <div className="space-y-2">
                                                     <h3 className="text-2xl font-bold">{sneaker.name}</h3>
-                                                    <p className="text-gray-300">{sneaker.brand}</p>
                                                 </div>
 
                                                 <div className="space-y-1">
                                                     <div className="flex items-center gap-3">
-                                                        {sneaker.discountPrice ? (
-                                                            <>
-                                                                <span className="text-3xl font-bold text-amber-400">${sneaker.discountPrice}</span>
-                                                                <span className="text-xl text-gray-400 line-through">${sneaker.price}</span>
-                                                            </>
-                                                        ) : (
                                                             <span className="text-3xl font-bold">${sneaker.price}</span>
-                                                        )}
                                                     </div>
-                                                    <p className="text-green-500">{sneaker.discountPrice ? "¡Oferta Especial!" : "Precio Regular"}</p>
+                                                    <p className="text-green-500">{sneaker.price ? "¡Oferta Especial!" : "Precio Regular"}</p>
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-3">

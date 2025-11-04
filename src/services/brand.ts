@@ -3,25 +3,73 @@ import { prismaClientGlobal } from '@/src/app/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { Brand } from '@/src/types';
 
-export async function getBrands(): Promise<Brand[]> {
+export async function getBrands(): Promise<{
+    brands: Array<Brand & { count: number }>,
+    pagination: {
+        page: number,
+        pageSize: number,
+        total: number,
+        totalPages: number
+    }
+}> {
+    const page = 1, pageSize = 10, limit = 10;
+
     try {
-        const brands = await prismaClientGlobal.brand.findMany({
+        const brandsRaw = await prismaClientGlobal.brand.findMany({
+            take: limit,
+            skip: (page - 1) * limit,
             orderBy: {
                 name: 'asc'
-            }
+            },
+            include: {
+                _count: {
+                    select: { products: true },
+                },
+            },
         });
-        return brands;
+
+        const total = await prismaClientGlobal.brand.count();
+
+        const brands = brandsRaw.map((brand) => ({
+            id: brand.id,
+            name: brand.name,
+            logoUrl: brand.logoUrl,
+            createdAt: brand.createdAt,
+            updatedAt: brand.updatedAt,
+            count: brand._count.products,
+        }));
+
+        return {
+            brands,
+            pagination: {
+                page,
+                pageSize,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
     } catch (error) {
         console.error('Error fetching brands:', error);
         throw new Error('Error fetching brands');
     }
 }
 
-export async function getBrandById(id: string): Promise<Brand | null> {
+export async function getTotalBrands(): Promise<number> {
+    try {
+        return (await getBrands()).pagination.total;
+    } catch (error) {
+        console.error('Error fetching total brands:', error);
+        throw new Error('Error fetching total brands');
+    }
+}
+
+export async function getBrandById(id: string): Promise<(Brand) | null> {
     try {
         const brand = await prismaClientGlobal.brand.findUnique({
-            where: { id }
+            where: { id },
         });
+        if (!brand) return null;
+
         return brand;
     } catch (error) {
         console.error('Error fetching brand by ID:', error);

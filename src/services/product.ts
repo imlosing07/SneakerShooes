@@ -6,9 +6,10 @@ import {
   ProductQueryDTO,
   PaginatedProductsResponse,
   UpdateProductDTO,
-  Product
+  Product,
+  AddProductImageDTO,
+  ProductImage
 } from '@/src/types';
-
 
 export async function getProducts(options: ProductQueryDTO): Promise<PaginatedProductsResponse> {
   const {
@@ -63,7 +64,7 @@ export async function getProducts(options: ProductQueryDTO): Promise<PaginatedPr
         include: {
           brand: true,
           images: {
-            orderBy: { position: 'asc' }
+            orderBy: { createdAt: 'asc' }
           },
           sizes: {
             orderBy: { value: 'asc' }
@@ -77,10 +78,8 @@ export async function getProducts(options: ProductQueryDTO): Promise<PaginatedPr
 
     const total = await prismaClientGlobal.product.count({ where });
 
-    console.log('Products found:', products); // Verifica el resultado aquí
-
-    return {
-      data: products.map(transformProductFromDB),
+    const result = {
+      products: products.map(transformProductFromDB),
       meta: {
         total,
         page,
@@ -88,6 +87,7 @@ export async function getProducts(options: ProductQueryDTO): Promise<PaginatedPr
         totalPages: Math.ceil(total / limit)
       }
     };
+    return result;
   } catch (error) {
     console.error('Error fetching products:', error);
     throw new Error('Failed to fetch products');
@@ -101,7 +101,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       include: {
         brand: true,
         images: {
-          orderBy: { position: 'asc' }
+          orderBy: { createdAt: 'asc' }
         },
         sizes: {
           orderBy: { value: 'asc' }
@@ -111,7 +111,6 @@ export async function getProductById(id: string): Promise<Product | null> {
 
     const newResult = transformProductFromDB(result); // Transformar el producto para asegurar que los precios son números
 
-    console.log('Product found:', result); // Verifica el resultado aquí
     return newResult;
   } catch (error) {
     console.error(`Error fetching product ${id}:`, error);
@@ -119,6 +118,27 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
+async function getImageUrls(url: string) {
+  try {
+    const response = await fetch("api/images/process-url", {
+      method: "POST",
+      body: JSON.stringify({
+        url,
+        folder: "products"
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    throw new Error('Failed to fetch images variants');
+  }
+}
+
+// src/services/product.ts - createProduct method
 export async function createProduct(data: CreateProductDTO): Promise<Product> {
   try {
     const result = await prismaClientGlobal.product.create({
@@ -129,15 +149,9 @@ export async function createProduct(data: CreateProductDTO): Promise<Product> {
         genre: data.genre,
         price: data.price,
         salePrice: data.salePrice || null,
-        featured: data.featured,
-        isNew: data.isNew,
+        featured: data.featured || false,
+        isNew: data.isNew ?? true,
         brandId: data.brandId,
-        images: {
-          create: data.images.map(img => ({
-            url: img.url,
-            position: img.position
-          }))
-        },
         sizes: {
           create: data.sizes.map(size => ({
             value: size.value,
@@ -147,12 +161,12 @@ export async function createProduct(data: CreateProductDTO): Promise<Product> {
       },
       include: {
         brand: true,
-        images: { orderBy: { position: 'asc' } },
+        images: { orderBy: { createdAt: 'asc' } },
         sizes: { orderBy: { value: 'asc' } }
       }
     });
 
-    return transformProductFromDB(result); // Transformar el producto para asegurar que los precios son números
+    return transformProductFromDB(result);
   } catch (error) {
     console.error('Error creating product:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -164,80 +178,85 @@ export async function createProduct(data: CreateProductDTO): Promise<Product> {
   }
 }
 
+// src/services/product.ts - updateProduct method (sin imágenes)
 export async function updateProduct(id: string, data: UpdateProductDTO): Promise<Product> {
-  const { images, sizes, ...productData } = data;
-
+  const { sizes, ...productData } = data;
+  
   try {
-    // Iniciamos una transacción para gestionar relaciones
     return await prismaClientGlobal.$transaction(async (prisma) => {
       // 1. Actualizar datos básicos del producto
       await prisma.product.update({
         where: { id },
         data: productData,
-        include: {
-          brand: true,
-          images: true,
-          sizes: true
-        }
       });
 
-      // 2. Actualizar imágenes si se proporcionan
-      if (images && images.length > 0) {
-        for (const image of images) {
-          await prisma.productImage.upsert({
-            where: {
-              productId_position: {
-                productId: id,
-                position: image.position,
-              },
-            },
-            update: {
-              url: image.url
-            },
-            create: {
-              url: image.url,
-              position: image.position,
-              productId: id
-            }
-          });
-        }
-      }
-
-
-      // 3. Actualizar tallas si se proporcionan
+      // 2. Actualizar tallas si se proporcionan
       if (sizes && sizes.length > 0) {
+        // Obtener tallas actuales
+        const currentSizes = await prisma.size.findMany({
+          where: { productId: id }
+        });
+        
+        // Crear un conjunto con los valores de tallas actuales
+        const currentSizeValues = new Set(currentSizes.map(size => size.value));
+        
+        // Conjunto para rastrear qué tallas se mantienen
+        const keepSizeValues = new Set<string>();
+        
         for (const size of sizes) {
-          await prisma.size.upsert({
-            where: {
-              productId_value: {
-                productId: id,
-                value: size.value,
+          keepSizeValues.add(size.value);
+          
+          if (currentSizeValues.has(size.value)) {
+            // La talla existe, actualizarla
+            await prisma.size.update({
+              where: {
+                productId_value: {
+                  productId: id,
+                  value: size.value,
+                }
+              },
+              data: {
+                inventory: size.inventory
               }
-            },
-            update: {
-              inventory: size.inventory
-            },
-            create: {
-              value: size.value,
-              inventory: size.inventory,
-              productId: id
-            }
-          });
+            });
+          } else {
+            // La talla es nueva, crearla
+            await prisma.size.create({
+              data: {
+                value: size.value,
+                inventory: size.inventory,
+                productId: id
+              }
+            });
+          }
+        }
+        
+        // Eliminar tallas que ya no están en la lista
+        for (const size of currentSizes) {
+          if (!keepSizeValues.has(size.value)) {
+            await prisma.size.delete({
+              where: {
+                productId_value: {
+                  productId: id,
+                  value: size.value
+                }
+              }
+            });
+          }
         }
       }
 
-
-      // 4. Obtener el producto actualizado con todas sus relaciones
+      // 3. Obtener el producto actualizado con todas sus relaciones
       const result = await prisma.product.findUnique({
         where: { id },
         include: {
           brand: true,
-          images: { orderBy: { position: 'asc' } },
+          images: { orderBy: { createdAt: 'asc' } },
           sizes: { orderBy: { value: 'asc' } }
         }
       });
-
-      return transformProductFromDB(result); // Transformar el producto para asegurar que los precios son números
+      
+      return transformProductFromDB(result);
     });
   } catch (error) {
     console.error(`Error updating product ${id}:`, error);
@@ -262,44 +281,6 @@ export async function deleteProduct(id: string): Promise<boolean> {
   }
 }
 
-export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
-  try {
-    const result = await prismaClientGlobal.product.findMany({
-      where: { featured: true },
-      take: limit,
-      include: {
-        brand: true,
-        images: { orderBy: { position: 'asc' } },
-        sizes: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    return result.map(transformProductFromDB); // Transformar el producto para asegurar que los precios son números
-  } catch (error) {
-    console.error('Error fetching featured products:', error);
-    throw new Error('Failed to fetch featured products');
-  }
-}
-
-export async function getNewProducts(limit = 8): Promise<Product[]> {
-  try {
-    const result = await prismaClientGlobal.product.findMany({
-      where: { isNew: true },
-      take: limit,
-      include: {
-        brand: true,
-        images: { orderBy: { position: 'asc' } },
-        sizes: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    return result.map(transformProductFromDB); // Transformar el producto para asegurar que los precios son números
-  } catch (error) {
-    console.error('Error fetching new products:', error);
-    throw new Error('Failed to fetch new products');
-  }
-}
-
 // Función helper de transformación
 function transformProductFromDB(product: any): Product {
   return {
@@ -307,4 +288,132 @@ function transformProductFromDB(product: any): Product {
     price: parseFloat(product.price.toString()),
     salePrice: product.salePrice ? parseFloat(product.salePrice.toString()) : null
   };
+}
+
+export function getTotalProducts(): Promise<number> {
+  return prismaClientGlobal.product.count();
+}
+
+// src/services/product.ts - Método para agregar imagen a producto existente
+
+export async function addProductImage(
+  productId: string, 
+  imageData: AddProductImageDTO
+): Promise<ProductImage> {
+  try {
+    // 1. Verificar que el producto existe
+    const product = await prismaClientGlobal.product.findUnique({
+      where: { id: productId },
+      include: { images: true }
+    });
+
+    if (!product) {
+      throw new Error(`Product with ID ${productId} not found`);
+    }
+
+    // 2. Determinar si esta imagen debe ser la principal
+    const isMain = product.images.length === 0; // Es main si es la primera imagen
+
+    // 3. Si esta imagen va a ser main, asegurar que ninguna otra lo sea
+    if (isMain && product.images.some(img => img.isMain)) {
+      await prismaClientGlobal.productImage.updateMany({
+        where: { 
+          productId: productId,
+          isMain: true 
+        },
+        data: { isMain: false }
+      });
+    }
+
+    // 4. Crear la nueva imagen
+    const newImage = await prismaClientGlobal.productImage.create({
+      data: {
+        originalUrl: imageData.originalUrl,
+        standardUrl: imageData.standardUrl,
+        publicId: imageData.publicId,
+        isMain: isMain,
+        productId: productId
+      }
+    });
+
+    return newImage;
+  } catch (error) {
+    console.error(`Error adding image to product ${productId}:`, error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        throw new Error(`Product with ID ${productId} not found`);
+      }
+    }
+    throw new Error(`Failed to add image to product ${productId}`);
+  }
+}
+
+// Método auxiliar para establecer imagen principal
+export async function setMainProductImage(
+  productId: string, 
+  imageId: string
+): Promise<boolean> {
+  try {
+    await prismaClientGlobal.$transaction(async (prisma) => {
+      // 1. Quitar isMain de todas las imágenes del producto
+      await prisma.productImage.updateMany({
+        where: { productId: productId },
+        data: { isMain: false }
+      });
+
+      // 2. Establecer la imagen especificada como main
+      await prisma.productImage.update({
+        where: { 
+          id: imageId,
+          productId: productId // Asegurar que la imagen pertenece al producto
+        },
+        data: { isMain: true }
+      });
+    });
+
+    return true;
+  } catch (error) {
+    console.error(`Error setting main image ${imageId} for product ${productId}:`, error);
+    throw new Error(`Failed to set main image`);
+  }
+}
+
+// Método para eliminar imagen de producto
+export async function removeProductImage(
+  productId: string, 
+  imageId: string
+): Promise<boolean> {
+  try {
+    const deletedImage = await prismaClientGlobal.productImage.delete({
+      where: { 
+        id: imageId,
+        productId: productId // Asegurar que la imagen pertenece al producto
+      }
+    });
+
+    // Si la imagen eliminada era la principal, establecer otra como principal
+    if (deletedImage.isMain) {
+      const firstImage = await prismaClientGlobal.productImage.findFirst({
+        where: { productId: productId },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      if (firstImage) {
+        await prismaClientGlobal.productImage.update({
+          where: { id: firstImage.id },
+          data: { isMain: true }
+        });
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error removing image ${imageId} from product ${productId}:`, error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        throw new Error(`Image with ID ${imageId} not found`);
+      }
+    }
+    throw new Error(`Failed to remove image from product`);
+  }
 }

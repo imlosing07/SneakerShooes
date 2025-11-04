@@ -7,7 +7,7 @@ export default function Breadcrumbs() {
   const pathNames = paths.split('/').filter( path => path )
 
   return (
-    <nav className="flex mb-4" aria-label="Breadcrumb">
+    <nav className="flex p-4" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-3">
         <li className="inline-flex items-center">
           <a href="/dashboard" className="text-gray-700 hover:text-gray-900 inline-flex items-center">

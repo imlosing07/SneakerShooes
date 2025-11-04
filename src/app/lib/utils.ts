@@ -1,15 +1,15 @@
 import { Product } from "@/src/types";
 
 export const formatCurrency = (amount: number) => {
-  return (amount / 100).toLocaleString('en-US', {
+  return (amount / 100).toLocaleString('es-PE', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'PEN',
   });
 };
 
 export const formatDateToLocal = (
   dateStr: string,
-  locale: string = 'en-US',
+  locale: string = 'es-PE',
 ) => {
   const date = new Date(dateStr);
   const options: Intl.DateTimeFormatOptions = {

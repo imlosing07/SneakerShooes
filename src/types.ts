@@ -1,7 +1,5 @@
 // types.ts
-
-import { Genre, ProductCategory } from "@prisma/client";
-
+import { ProductCategory, Genre } from '@/src/app/lib/constants/product-constants';
 
 // Entidades relacionadas
 export interface Size {
@@ -9,13 +7,20 @@ export interface Size {
   productId: string;
   value: string;
   inventory: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+// ✅ Corregido según schema Prisma
 export interface ProductImage {
   id: string;
-  url: string;
-  position: number;
   productId: string;
+  originalUrl: string;   // Imagen de alta calidad (2000px)
+  standardUrl: string;   // Imagen estándar (600-840px)
+  publicId: string;      // ID público en Cloudinary
+  isMain: boolean;       // Indica si es la imagen principal
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Brand {
@@ -46,7 +51,7 @@ export interface Product {
   updatedAt: Date;
 }
 
-// DTO específico para creación - solo incluye lo necesario
+// ✅ DTO para creación - SIN imágenes
 export interface CreateProductDTO {
   name: string;
   description?: string | null;
@@ -57,17 +62,18 @@ export interface CreateProductDTO {
   featured?: boolean;
   isNew?: boolean;
   brandId: string;
-  
-  // Arrays anidados más simples
-  images: {
-    url: string;
-    position: number;
-  }[];
-  
   sizes: {
     value: string;
     inventory: number;
   }[];
+}
+
+// ✅ DTO para agregar imagen a producto existente
+export interface AddProductImageDTO {
+  originalUrl: string;
+  standardUrl: string;
+  publicId: string;
+  // isMain se calcula automáticamente
 }
 
 // DTO para actualización - todo opcional excepto ID
@@ -81,14 +87,8 @@ export interface UpdateProductDTO {
   featured?: boolean;
   isNew?: boolean;
   brandId?: string;
-  
-  // Opcional para actualizaciones parciales
-  images?: {
-    id?: string;  // Para actualizar existentes
-    url: string;
-    position: number;
-  }[];
-  
+
+  // ✅ Eliminamos images de aquí - se maneja por separado
   sizes?: {
     id?: string;  // Para actualizar existentes
     value: string;
@@ -114,7 +114,7 @@ export interface ProductQueryDTO {
 
 // Respuesta paginada
 export interface PaginatedProductsResponse {
-  data: Product[];
+  products: Product[];
   meta: {
     total: number;
     page: number;
@@ -122,34 +122,34 @@ export interface PaginatedProductsResponse {
     totalPages: number;
   };
 }
-  
-  // Tipos para los filtros
-  export interface Filters {
-    brand: string;
-    priceRange: string;
-    color: string;
-    isOnSale: boolean;
-  }
-  
-  // Props para cada componente
-  export interface SidebarFiltersProps {
-    filters: Filters;
-    onFilterChange: (filterName: string, value: string | boolean) => void;
-    brands: string[];
-    colors: string[];
-  }
-  
-  export interface ProductGridProps {
-    products: Product[];
-    searchTerm: string;
-    onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    resultsCount: number;
-  }
-  
-  export interface ProductCardProps {
-    product: Product;
-  }
-  
-  export interface ProductCatalogProps {
-    products: Product[];
-  }
+
+// Tipos para los filtros
+export interface Filters {
+  brand: string;
+  priceRange: string;
+  color: string;
+  isOnSale: boolean;
+}
+
+// Props para cada componente
+export interface SidebarFiltersProps {
+  filters: Filters;
+  onFilterChange: (filterName: string, value: string | boolean) => void;
+  brands: string[];
+  colors: string[];
+}
+
+export interface ProductGridProps {
+  products: Product[];
+  searchTerm: string;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  resultsCount: number;
+}
+
+export interface ProductCardProps {
+  product: Product;
+}
+
+export interface ProductCatalogProps {
+  products: Product[];
+}

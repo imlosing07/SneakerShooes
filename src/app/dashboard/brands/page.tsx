@@ -2,8 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { brandApiClient } from '@/src/app/lib/api/brand-client';
-import Brand from '@/domain/brand/brand.entity';
+import { Brand } from '@/src/types';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/src/app/ui/fonts';
 
@@ -12,16 +11,16 @@ export default function BrandsPage() {
   const [pagination, setPagination] = useState({ page: 1, pageSize: 10, total: 0, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Form state
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newBrandName, setNewBrandName] = useState('');
-  const [newBrandDescription, setNewBrandDescription] = useState('');
-  
+  const [newBrandLogo, setNewBrandLogo] = useState('');
+
   // Selected brand for editing
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [editName, setEditName] = useState('');
-  const [editDescription, setEditDescription] = useState('');
+  const [editLogo, setEditLogo] = useState('');
 
   // Fetch brands on page load and when pagination changes
   useEffect(() => {
@@ -29,10 +28,12 @@ export default function BrandsPage() {
   }, [pagination.page]);
 
   async function fetchBrands() {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      const data = await brandApiClient.getAllBrands(pagination.page, pagination.pageSize);
+      const res = await fetch(`/api/brands?page=${pagination.page}&pageSize=${pagination.pageSize}`);
+      if (!res.ok) throw new Error('Failed to fetch brands');
+      const data = await res.json();
       setBrands(data.brands);
       setPagination(data.pagination);
     } catch (err: any) {
@@ -46,13 +47,15 @@ export default function BrandsPage() {
     e.preventDefault();
     try {
       setLoading(true);
-      await brandApiClient.createBrand({
-        name: newBrandName,
-        description: newBrandDescription,
+      const res = await fetch('/api/brands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newBrandName, logoUrl: newBrandLogo }),
       });
+      if (!res.ok) throw new Error('Failed to create brand');
       // Reset form
       setNewBrandName('');
-      setNewBrandDescription('');
+      setNewBrandLogo('');
       setShowCreateForm(false);
       // Refresh list
       fetchBrands();
@@ -65,20 +68,22 @@ export default function BrandsPage() {
 
   async function handleSelectBrand(brand: Brand) {
     setSelectedBrand(brand);
-    setEditName(brand.props.name);
-    setEditDescription(brand.props.description || '');
+    setEditName(brand.name);
+    setEditLogo(brand.logoUrl || '');
   }
 
   async function handleUpdateBrand(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedBrand) return;
-    
+
     try {
       setLoading(true);
-      await brandApiClient.updateBrand(selectedBrand.props.id, {
-        name: editName,
-        description: editDescription,
+      const res = await fetch(`/api/brands/${selectedBrand.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName, logoUrl: editLogo }),
       });
+      if (!res.ok) throw new Error('Failed to update brand');
       // Reset edit form
       setSelectedBrand(null);
       // Refresh list
@@ -92,10 +97,13 @@ export default function BrandsPage() {
 
   async function handleDeleteBrand(id: string) {
     if (!confirm('Are you sure you want to delete this brand?')) return;
-    
+
     try {
       setLoading(true);
-      await brandApiClient.deleteBrand(id);
+      const res = await fetch(`/api/brands/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete brand');
       // Refresh list
       fetchBrands();
     } catch (err: any) {
@@ -109,21 +117,21 @@ export default function BrandsPage() {
     <main>
       <div className="flex justify-between items-center mb-6">
         <h1 className={`${lusitana.className} text-2xl font-bold`}>Brands Management</h1>
-        <button 
-          onClick={() => setShowCreateForm(!showCreateForm)} 
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
           className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
         >
           <PlusIcon className="w-5 h-5" />
           {showCreateForm ? 'Cancel' : 'Add Brand'}
         </button>
       </div>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
-      
+
       {/* Create Brand Form */}
       {showCreateForm && (
         <div className="mb-8 bg-white p-6 rounded-lg shadow-md border border-gray-200">
@@ -141,12 +149,12 @@ export default function BrandsPage() {
                 />
               </div>
               <div>
-                <label className="block mb-1 font-medium">Description:</label>
-                <textarea
-                  value={newBrandDescription}
-                  onChange={(e) => setNewBrandDescription(e.target.value)}
+                <label className="block mb-1 font-medium">Logo URL:</label>
+                <input
+                  type="text"
+                  value={newBrandLogo}
+                  onChange={(e) => setNewBrandLogo(e.target.value)}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
                 />
               </div>
             </div>
@@ -162,7 +170,7 @@ export default function BrandsPage() {
           </form>
         </div>
       )}
-      
+
       {/* Edit Brand Modal */}
       {selectedBrand && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -180,12 +188,12 @@ export default function BrandsPage() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 font-medium">Description:</label>
-                <textarea
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
+                <label className="block mb-1 font-medium">Logo URL:</label>
+                <input
+                  type="text"
+                  value={editLogo}
+                  onChange={(e) => setEditLogo(e.target.value)}
                   className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
                 />
               </div>
               <div className="flex justify-end space-x-2">
@@ -208,7 +216,7 @@ export default function BrandsPage() {
           </div>
         </div>
       )}
-      
+
       {/* Brands List */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
@@ -226,12 +234,12 @@ export default function BrandsPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {brands.map((brand) => (
-                  <tr key={brand.props.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">{brand.props.name}</td>
-                    <td className="px-6 py-4">{brand.props.description || 'No description'}</td>
+                  <tr key={brand.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">{brand.name}</td>
+                    <td className="px-6 py-4">{brand.logoUrl || 'No logo'}</td>
                     <td className="px-6 py-4">
-                      <a 
-                        href={`/dashboard/products?brandId=${brand.props.id}`}
+                      <a
+                        href={`/dashboard/products?brandId=${brand.id}`}
                         className="text-blue-500 hover:text-blue-700"
                       >
                         View Products
@@ -246,7 +254,7 @@ export default function BrandsPage() {
                         <PencilIcon className="h-5 w-5 inline" />
                       </button>
                       <button
-                        onClick={() => handleDeleteBrand(brand.props.id)}
+                        onClick={() => handleDeleteBrand(brand.id)}
                         className="text-red-500 hover:text-red-700"
                         title="Delete Brand"
                       >
@@ -261,7 +269,7 @@ export default function BrandsPage() {
             <div className="p-8 text-center text-gray-500">No brands found.</div>
           )}
         </div>
-        
+
         {/* Pagination */}
         {brands.length > 0 && (
           <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
@@ -269,18 +277,16 @@ export default function BrandsPage() {
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                 disabled={pagination.page <= 1 || loading}
-                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
-                  pagination.page <= 1 ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${pagination.page <= 1 ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 Previous
               </button>
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                 disabled={pagination.page >= pagination.totalPages || loading}
-                className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
-                  pagination.page >= pagination.totalPages ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${pagination.page >= pagination.totalPages ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 Next
               </button>
@@ -300,9 +306,8 @@ export default function BrandsPage() {
                   <button
                     onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                     disabled={pagination.page <= 1 || loading}
-                    className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
-                      pagination.page <= 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
-                    }`}
+                    className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${pagination.page <= 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
+                      }`}
                   >
                     <span className="sr-only">Previous</span>
                     &larr;
@@ -310,9 +315,8 @@ export default function BrandsPage() {
                   <button
                     onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                     disabled={pagination.page >= pagination.totalPages || loading}
-                    className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
-                      pagination.page >= pagination.totalPages ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
-                    }`}
+                    className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${pagination.page >= pagination.totalPages ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
+                      }`}
                   >
                     <span className="sr-only">Next</span>
                     &rarr;

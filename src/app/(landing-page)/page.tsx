@@ -1,19 +1,20 @@
+"use client";
+import { useState, useEffect } from "react";
+import BrandsCarousel from "./components/BrandsCarousel";
 import HeroSection from "./components/Hero";
-import DynamicShoesCarousel from "./components/ProductSection";
-import CasualShoesSection from "./components/CasualShoesSection";
-import FAQSection from "./components/faq";
-import ProcessSection from "./components/ProcessTestimonialsFooter";
-import TestimonialsSection from "./components/ProcessTestimonialsFooter";
+import Navbar from "./components/Navbar";
+import ProductsSection from "./components/ProductSection";
 
-export default function Home() {
+// ============================================
+// MAIN APP
+// ============================================
+export default function App() {
   return (
-    <div>
+    <div className="font-sans">
+      <Navbar />
       <HeroSection />
-      <DynamicShoesCarousel />
-      <CasualShoesSection />
-      <ProcessSection />
-      <TestimonialsSection />
-      <FAQSection />
+      <BrandsCarousel />
+      <ProductsSection />
     </div>
   );
 }

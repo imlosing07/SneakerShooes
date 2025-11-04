@@ -1,8 +1,9 @@
 import React from 'react'
 import Image from 'next/image'
 import ImagenHeader from '@/public/childrenImages/banner_principal_ninos_desktop.webp'
-import { ProductCatalog } from '../(category-page)/mujer/components/ProductCatalog'
-import { allSneakers } from '../(category-page)/mujer/page'
+import { ProductCatalog } from '../components/ProductCatalog'
+import { allSneakers } from '../mujer/page'
+
 
 function Ninos() {
     return (
