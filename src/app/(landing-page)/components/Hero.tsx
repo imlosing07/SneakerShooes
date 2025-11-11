@@ -2,7 +2,7 @@
 import { CATEGORIES } from "@/src/types";
 import { useEffect, useState } from "react";
 
-function HeroSection() {
+function HeroSection({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = CATEGORIES.map((category) => ({
@@ -10,7 +10,7 @@ function HeroSection() {
     mobileImage: category.imagenMobile,
     title: category.name,
     description: `Descubre nuestra colección de ${category.name.toLowerCase()}`,
-    ctaPrimary: { text: "Explorar", href: `/` + category.navigationName},
+    ctaPrimary: { text: "Explorar", href: `/` + category.navigationName },
   }));
 
   useEffect(() => {
@@ -42,12 +42,12 @@ function HeroSection() {
             <h1 className="text-5xl md:text-6xl font-bold">{currentData.title}</h1>
             <p className="text-xl text-gray-200">{currentData.description}</p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <a
-                href={currentData.ctaPrimary.href}
+              <button
+                onClick={() => onNavigate(currentData.ctaPrimary.href)}
                 className="bg-white text-black px-8 py-3 rounded font-medium hover:bg-gray-100 transition"
               >
                 {currentData.ctaPrimary.text}
-              </a>
+              </button>
             </div>
           </div>
         </div>

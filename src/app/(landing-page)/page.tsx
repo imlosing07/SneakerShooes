@@ -49,7 +49,7 @@ export default function App() {
       onProductClick: (product: Product) => setSelectedProduct(product)
     };
 
-    
+
 
     // ✅ SOLO renderiza UNA página a la vez
     switch (currentPage) {
@@ -66,7 +66,7 @@ export default function App() {
         // ✅ HOME completo con Hero + Brands + Grid
         return (
           <>
-            <HeroSection />
+            <HeroSection onNavigate={setCurrentPage}/>
             <BrandsCarousel />
             <ProductGrid 
               products={products} 
