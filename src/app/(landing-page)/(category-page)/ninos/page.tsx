@@ -1,39 +1,20 @@
-import React from 'react'
-import Image from 'next/image'
-import ImagenHeader from '@/public/childrenImages/banner_principal_ninos_desktop.webp'
-import { ProductCatalog } from '../components/ProductCatalog'
-import { allSneakers } from '../mujer/page'
+import { Product } from "@/src/types";
 
-
-function Ninos() {
-    return (
-        <div className="min-h-screen bg-gray-900 text-gray-100 pt-20">
-            {/* Encabezado */}
-            <header className="relative h-96 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent z-10"></div>
-                <Image
-                    src={ImagenHeader}
-                    alt="Sneakers para Mujer"
-                    fill
-                    className="object-cover object-center"
-                    priority
-                />
-                <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 z-20">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-white">
-                        Sneakers para Ninos
-                    </h1>
-                    <p className="text-lg md:text-xl text-gray-200 max-w-xl">
-                        Combina estilo, comodidad y versatilidad con nuestra exclusiva colección de zapatillas deportivas para mujer
-                    </p>
-                </div>
-            </header>
-
-            {/* Catálogo de productos con barra lateral */}
-            <ProductCatalog products={allSneakers} />
-            
+export default function KidsPage({ onProductClick }: { onProductClick: (p: Product) => void }) {
+  return (
+    <div className="pt-20">
+      <div className="relative h-64 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 flex items-center justify-center">
+        <div className="text-center text-white">
+          <h1 className="text-5xl font-bold mb-2">Niños</h1>
+          <p className="text-xl">Comodidad y diversión para los más pequeños</p>
         </div>
+      </div>
 
-    )
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-gray-500">Próximamente - Colección Kids</p>
+        </div>
+      </section>
+    </div>
+  );
 }
-
-export default Ninos

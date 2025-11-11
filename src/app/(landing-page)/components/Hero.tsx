@@ -1,27 +1,17 @@
 "use client";
+import { CATEGORIES } from "@/src/types";
 import { useEffect, useState } from "react";
 
 function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      desktopImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761054065/bgDiadora.jpg",
-      mobileImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761054162/bgDiadoraMobile.jpg",
-      title: "Diadora",
-      description: "Descubre nuestra exclusiva colección de calzado importado",
-      ctaPrimary: { text: "Ver Colección", href: "#productos" },
-      ctaSecondary: { text: "Explorar", href: "#marcas" }
-    },
-    {
-      desktopImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761052618/bgConverse.jpg",
-      mobileImage: "https://res.cloudinary.com/sneakershooess/image/upload/v1761052517/bgConverseMobile.jpg",
-      title: "Converse",
-      description: "Explora las últimas tendencias en calzado urbano",
-      ctaPrimary: { text: "Descubrir", href: "#productos" },
-      ctaSecondary: { text: "Ver Todo", href: "#catalogo" }
-    }
-  ];
+  const slides = CATEGORIES.map((category) => ({
+    desktopImage: category.imagenDesktop,
+    mobileImage: category.imagenMobile,
+    title: category.name,
+    description: `Descubre nuestra colección de ${category.name.toLowerCase()}`,
+    ctaPrimary: { text: "Explorar", href: `/` + category.navigationName},
+  }));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,12 +47,6 @@ function HeroSection() {
                 className="bg-white text-black px-8 py-3 rounded font-medium hover:bg-gray-100 transition"
               >
                 {currentData.ctaPrimary.text}
-              </a>
-              <a
-                href={currentData.ctaSecondary.href}
-                className="border-2 border-white text-white px-8 py-3 rounded font-medium hover:bg-white hover:text-black transition"
-              >
-                {currentData.ctaSecondary.text}
               </a>
             </div>
           </div>

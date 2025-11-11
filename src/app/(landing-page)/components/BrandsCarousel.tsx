@@ -20,9 +20,7 @@ function BrandsCarousel() {
     return (
         <section className="py-12 bg-gray-50 overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 mb-8">
-                <h2 className="text-3xl font-bold text-center">Marcas Destacadas</h2>
-                {/* Brands data logged in useEffect */}
-
+                <h2 className="text-3xl font-bold text-center pb-4">Marcas Destacadas</h2>
 
                 <div className="relative">
                     <div className="flex animate-scroll">
@@ -32,7 +30,7 @@ function BrandsCarousel() {
                                 className="flex-shrink-0 w-48 h-24 mx-8 flex items-center justify-center grayscale hover:grayscale-0 transition duration-300"
                             >
                                 <Image
-                                    src={"/sso.png"}
+                                    src={"/brandsImages/" + brand.logoUrl}
                                     alt={brand.name}
                                     width={150}
                                     height={60}

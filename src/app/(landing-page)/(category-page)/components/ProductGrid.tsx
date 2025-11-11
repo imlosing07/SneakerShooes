@@ -1,48 +1,41 @@
-// ProductGrid.jsx
-import React from 'react';
-import { ProductCard } from './ProductCard';
-import { ProductGridProps } from '@/src/types';
+import { Product } from "@/src/types";
+import ProductCard from "./ProductCard";
 
-export const ProductGrid: React.FC<ProductGridProps> = ({ products, searchTerm, onSearch, resultsCount }) => {
+export default function ProductGrid({
+  products,
+  title,
+  onProductClick
+}: {
+  products: Product[];
+  title: string;
+  onProductClick: (product: Product) => void;
+}) {
   return (
-    <div className="flex-1">
-      {/* Barra de búsqueda */}
-      <div className="mb-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Buscar sneakers..."
-            value={searchTerm}
-            onChange={onSearch}
-            className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 pl-10"
-          />
-          <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+    <section className="pb-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold">{title}</h2>
+          <a href="#todos" className="text-sm font-medium hover:underline">
+            Ver todo →
+          </a>
         </div>
-        <p className="text-sm text-gray-400 mt-2">
-          {resultsCount} {resultsCount === 1 ? 'resultado encontrado' : 'resultados encontrados'}
-        </p>
-      </div>
 
-      {/* Grid de productos */}
-      {products.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-xl text-gray-400">No se encontraron productos que coincidan con tus filtros.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {products.map(product => (
-            <ProductCard key={product.id} {...product} />
-          ))}
-        </div>
-      )}
-    </div>
+        {products.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            No hay productos disponibles
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onClick={() => onProductClick(product)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
-};
+}

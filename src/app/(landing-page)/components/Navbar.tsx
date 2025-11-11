@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-function Navbar() {
+export default function Navbar({ onNavigate, currentPage }: { onNavigate: (page: string) => void; currentPage: string }) {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -15,41 +15,52 @@ function Navbar() {
       setLastScrollY(window.scrollY);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (e.clientY < 80) setShowNavbar(true);
-    };
-
     window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  const navItems = [
+    { id: "/", label: "Home" },
+    { id: "/hombre", label: "Hombre" },
+    { id: "/mujer", label: "Mujer" },
+    { id: "/ninos", label: "Niños" },
+    { id: "/formal", label: "Formal" }
+  ];
+
   return (
-    <nav className={`fixed w-full bg-white shadow-sm transition-transform duration-300 z-50 ${showNavbar ? 'translate-y-0' : '-translate-y-full'
-      }`}>
+    <nav className={`fixed w-full bg-white shadow-sm transition-transform duration-300 z-50 ${
+      showNavbar ? 'translate-y-0' : '-translate-y-full'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="text-2xl font-bold">
+          <button 
+            onClick={() => onNavigate("/")}
+            className="text-2xl font-bold cursor-pointer"
+          >
             Sneakers<span className="text-gray-400">Hooes</span>
-          </div>
-
+          </button>
+          
           <div className="hidden md:flex space-x-8">
-            <a href="#top" className="text-gray-700 hover:text-black transition">TOP</a>
-            <a href="#hombre" className="text-gray-700 hover:text-black transition">Hombre</a>
-            <a href="#mujer" className="text-gray-700 hover:text-black transition">Mujer</a>
-            <a href="#ninos" className="text-gray-700 hover:text-black transition">Niños</a>
-            <a href="#formal" className="text-gray-700 hover:text-black transition">Formal</a>
+            {navItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => onNavigate(item.id)}
+                className={`transition ${
+                  currentPage === item.id 
+                    ? 'text-black font-medium' 
+                    : 'text-gray-700 hover:text-black'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
           <div className="flex space-x-4">
-            <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black transition">
+            <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black">
               Login
             </button>
-            <button className="px-4 py-2 text-sm font-medium bg-black text-white rounded hover:bg-gray-800 transition">
+            <button className="px-4 py-2 text-sm font-medium bg-black text-white rounded hover:bg-gray-800">
               Signup
             </button>
           </div>
@@ -58,5 +69,3 @@ function Navbar() {
     </nav>
   );
 }
-
-export default Navbar;

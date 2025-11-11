@@ -1,6 +1,40 @@
 // types.ts
 import { ProductCategory, Genre } from '@/src/app/lib/constants/product-constants';
 
+export interface Category {
+  name: string;
+  navigationName?: string;
+  imagenDesktop: string;
+  imagenMobile: string;
+}
+
+export const CATEGORIES: Category[] = [
+  {
+    name: 'Hombre',
+    navigationName: 'hombre',
+    imagenDesktop: 'categoryImages/desktopMen.jpg',
+    imagenMobile: 'categoryImages/mobileMen.jpg',
+  },
+  {
+    name: 'Mujer',
+    navigationName: 'mujer',
+    imagenDesktop: 'categoryImages/desktopWomen.webp',
+    imagenMobile: 'categoryImages/mobileWomen.webp',
+  },
+  {
+    name: 'Niños',
+    navigationName: 'ninos',
+    imagenDesktop: 'categoryImages/desktopChildren.webp',
+    imagenMobile: 'categoryImages/mobileChildren.webp',
+  },
+  {
+    name: 'Formal',
+    navigationName: 'formal',
+    imagenDesktop: 'categoryImages/desktopFormal.webp',
+    imagenMobile: 'categoryImages/mobileFormal.webp',
+  }
+];
+
 // Entidades relacionadas
 export interface Size {
   id: string;

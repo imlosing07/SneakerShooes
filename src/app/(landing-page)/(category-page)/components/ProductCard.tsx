@@ -1,63 +1,74 @@
-import React from 'react';
-import Image from 'next/image';
-import { Product } from '@/src/types';
+import { Product } from "@/src/types";
 
-export const ProductCard: React.FC<Product> = ({
-  name,
-  brand,
-  price,
-  isNew,
-}) => {
+export default function ProductCard({ product, onClick }: { product: Product; onClick?: () => void }) {
+  const hasDiscount = product.salePrice && product.salePrice < product.price;
+  const discountPercent = hasDiscount
+    ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
+    : 0;
+
+  const mainImage = product.images.find(img => img.isMain) || product.images[0];
 
   return (
-    <div className="group relative overflow-hidden rounded-lg bg-gray-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl border border-gray-700">
-      {/* Badges */}
-      <div className="absolute top-0 left-0 z-10 flex flex-col gap-1 p-2">
-        {isNew && (
-          <span className="bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-            Nuevo
+    <div onClick={onClick} className="group cursor-pointer">
+      <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
+        {/* Badges */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+          {product.isNew && (
+            <span className="bg-black text-white text-xs font-bold px-3 py-1 rounded-full">
+              NUEVO
+            </span>
+          )}
+          {hasDiscount && (
+            <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+              -{discountPercent}%
+            </span>
+          )}
+        </div>
+
+        {product.featured && (
+          <span className="absolute top-3 right-3 bg-amber-400 text-black text-xs font-bold px-3 py-1 rounded-full z-10">
+            ⭐ TOP
           </span>
         )}
-      </div>
 
-      {/* Imagen */}
-      <div className="h-48 sm:h-56 overflow-hidden">
-        <div className="relative h-full w-full">
-          <Image
-            src={"https://www.plasticaucho.com.pe/blog/wp-content/uploads/2021/02/C%C3%B3mo-iniciar-un-negocio-enfocado-en-la-venta-de-zapatillas-en-Lima.jpg"} // Asegúrate de que la ruta sea correcta
-            alt={name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+        {/* Imagen */}
+        {mainImage ? (
+          <img
+            src={mainImage.standardUrl}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
-        </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            Sin imagen
+          </div>
+        )}
+
+        {/* Botón favorito (desktop) */}
+        <button className="absolute bottom-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-gray-50">
+          <span className="text-xl">♡</span>
+        </button>
       </div>
 
-      {/* Información del producto */}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-1">
-          <h3 className="text-lg font-semibold text-white">{name}</h3>
-        </div>
-        <p className="text-gray-400 text-sm mb-2">{brand?.name}</p>
-
-        {/* Precio y botón */}
-        <div className="flex justify-between items-center mt-2">
-          <div>
-            {isNew ? (
-              <div>
-                <span className="text-gray-400 line-through text-sm mr-2">€{price.toFixed(2)}</span>
-                <span className="text-lg font-bold text-pink-300">€{price.toFixed(2)}</span>
-              </div>
-            ) : (
-              <span className="text-lg font-bold text-pink-300">€{price.toFixed(2)}</span>
-            )}
-          </div>
-          <button className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded-full text-sm transition-colors">
-            Añadir
-          </button>
+      {/* Info del producto */}
+      <div className="space-y-1">
+        <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+          {product.brand?.name}
+        </p>
+        <h3 className="font-medium text-sm line-clamp-2 group-hover:underline">
+          {product.name}
+        </h3>
+        <div className="flex items-center gap-2">
+          {hasDiscount ? (
+            <>
+              <p className="font-bold text-red-600">S/ {product.salePrice?.toFixed(2)}</p>
+              <p className="text-xs text-gray-400 line-through">S/ {product.price.toFixed(2)}</p>
+            </>
+          ) : (
+            <p className="font-bold">S/ {product.price.toFixed(2)}</p>
+          )}
         </div>
       </div>
     </div>
   );
-};
-
-
+}
