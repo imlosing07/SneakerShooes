@@ -1,6 +1,3 @@
-import NewsletterForm from "@/src/app/(landing-page)/(category-page)/components/NewsletterForm"
-import Link from "next/link";
-
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-12">

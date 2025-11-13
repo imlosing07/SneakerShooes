@@ -11,7 +11,6 @@ import WomensPage from "./(category-page)/mujer/page";
 import FormalPage from "./(category-page)/formal/page";
 import KidsPage from "./(category-page)/ninos/page";
 import ProductDetailView from "./producto/[id]/page";
-import { CATEGORIES } from "@/src/types";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("/");
