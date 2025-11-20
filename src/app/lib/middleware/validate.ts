@@ -24,6 +24,7 @@ export function validateRequest<T>(
       // Para otros métodos, validamos el cuerpo JSON
       const body = await req.json().catch(() => ({}));
       const data = schema.parse(body);
+      console.log('Validated data:', data);
       return handler(req, data);
     } catch (error) {
       if (error instanceof z.ZodError) {

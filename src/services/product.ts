@@ -118,28 +118,9 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
-async function getImageUrls(url: string) {
-  try {
-    const response = await fetch("api/images/process-url", {
-      method: "POST",
-      body: JSON.stringify({
-        url,
-        folder: "products"
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error('Error fetching images:', error);
-    throw new Error('Failed to fetch images variants');
-  }
-}
-
 // src/services/product.ts - createProduct method
 export async function createProduct(data: CreateProductDTO): Promise<Product> {
+  console.log('Creating product with data:', data);
   try {
     const result = await prismaClientGlobal.product.create({
       data: {
@@ -161,14 +142,13 @@ export async function createProduct(data: CreateProductDTO): Promise<Product> {
       },
       include: {
         brand: true,
-        images: { orderBy: { createdAt: 'asc' } },
         sizes: { orderBy: { value: 'asc' } }
       }
     });
 
     return transformProductFromDB(result);
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.log('Error creating product:', error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === 'P2002') {
         throw new Error('A product with this name already exists');

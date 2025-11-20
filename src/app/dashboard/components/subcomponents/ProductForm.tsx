@@ -29,7 +29,7 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
     isNew: initialData?.isNew ?? true,
   });
 
-  const [sizes, setSizes] = useState(initialData?.sizes || []);
+  const [sizes, setSizes] = useState<Array<{ value: string; inventory: number | null }>>(initialData?.sizes || []);
   const [imageUrls, setImageUrls] = useState<string[]>(initialData?.images?.map((img: any) => img.standardUrl) || []);
   const [newImageUrl, setNewImageUrl] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -66,9 +66,11 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
       setSizes([]);
       setImageUrls([]);
     }
-  }, [initialData, isEdit]);
+  }, [initialData?.id, isEdit]); // ✅ Usar initialData?.id en lugar de initialData completo
 
-  const addSize = () => setSizes([...sizes, { value: '', inventory: 0 }]);
+  const addSize = () => {
+    setSizes([...sizes, { value: '', inventory: null }]);
+  };
   const updateSize = (index: number, field: string, value: any) => {
     setSizes(sizes.map((size: any, i: number) => i === index ? { ...size, [field]: value } : size));
   };
@@ -116,10 +118,31 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // ✅ Validar que todos los sizes tengan value y inventory válidos
+    const validSizes = sizes.filter((size: any) => {
+      const hasValue = size.value && size.value.trim() !== '';
+      const hasInventory = size.inventory !== null && size.inventory !== undefined && size.inventory >= 0;
+      return hasValue && hasInventory;
+    });
+
+    // Si hay sizes vacíos, advertir al usuario
+    if (validSizes.length === 0) {
+      alert('Please add at least one size with a valid value and inventory amount');
+      return;
+    }
+
+    if (validSizes.length < sizes.length) {
+      const skipped = sizes.length - validSizes.length;
+      const confirmed = window.confirm(
+        `${skipped} size(s) have empty or invalid inventory values and will be skipped. Continue?`
+      );
+      if (!confirmed) return;
+    }
+
     // Limpiar sizes - solo enviar value e inventory
-    const cleanSizes = sizes.map((size: any) => ({
-      value: size.value,
-      inventory: size.inventory
+    const cleanSizes = validSizes.map((size: any) => ({
+      value: size.value.trim(),
+      inventory: parseInt(size.inventory) || 0
     }));
     
     await onSubmit({
@@ -277,8 +300,8 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
                     type="number"
                     placeholder="Stock"
                     min="0"
-                    value={size.inventory || ''}
-                    onChange={(e) => updateSize(index, 'inventory', parseInt(e.target.value) || 0)}
+                    value={size.inventory === null ? '' : size.inventory}
+                    onChange={(e) => updateSize(index, 'inventory', e.target.value === '' ? null : parseInt(e.target.value))}
                     className="w-24 p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button type="button" onClick={() => removeSize(index)} className="text-red-500 hover:text-red-700 p-1">
