@@ -81,7 +81,7 @@ export function useProducts(options: UseProductsOptions = {}) {
       if (params.category) searchParams.set('category', params.category);
       if (params.page) searchParams.set('page', params.page.toString());
       if (params.pageSize) searchParams.set('pageSize', params.pageSize.toString());
-      if (params.query) searchParams.set('query', params.query);
+      if (params.query) searchParams.set('search', params.query);
       if (params.brandId) searchParams.set('brandId', params.brandId);
       
       const queryString = searchParams.toString();
@@ -228,7 +228,7 @@ export function useProducts(options: UseProductsOptions = {}) {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`/api/products?query=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/products?search=${encodeURIComponent(query)}`);
       
       if (!response.ok) {
         throw new Error('Failed to search products');

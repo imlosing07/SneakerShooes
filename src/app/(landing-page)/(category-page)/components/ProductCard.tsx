@@ -1,4 +1,5 @@
 import { Product } from "@/src/types";
+import FavoriteButton from "../../components/FavoriteButton";
 
 export default function ProductCard({ product, onClick }: { product: Product; onClick?: () => void }) {
   const hasDiscount = product.salePrice && product.salePrice < product.price;
@@ -44,10 +45,10 @@ export default function ProductCard({ product, onClick }: { product: Product; on
           </div>
         )}
 
-        {/* Botón favorito (desktop) */}
-        <button className="absolute bottom-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg hover:bg-gray-50">
-          <span className="text-xl">♡</span>
-        </button>
+        {/* Botón favorito (desktop hover, mobile always visible) */}
+        <div className="absolute bottom-3 right-3 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition z-10">
+          <FavoriteButton productId={product.id} variant="floating" />
+        </div>
       </div>
 
       {/* Info del producto */}

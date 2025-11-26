@@ -1,19 +1,75 @@
+"use client";
 import { Product } from "@/src/types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SizeGuideModal from "../../components/SizeGuideModal";
-
+import FavoriteButton from "../../components/FavoriteButton";
+import { useCart } from "@/src/app/lib/contexts/CartContext";
+import { X, ShoppingCart } from "lucide-react";
 
 export default function ProductDetailView({ product, onClose }: { product: Product; onClose: () => void }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const { addToCart } = useCart();
 
   const hasDiscount = product.salePrice && product.salePrice < product.price;
+  const mainImage = product.images.find(img => img.isMain) || product.images[0];
+
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  // Cerrar con tecla ESC
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose]);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedSize) return;
+
+    const selectedSizeObj = product.sizes.find(s => s.value === selectedSize);
+    if (!selectedSizeObj || selectedSizeObj.inventory === 0) return;
+
+    addToCart({
+      productId: product.id,
+      productName: product.name,
+      productImage: mainImage?.standardUrl || '',
+      brandName: product.brand?.name || '',
+      size: selectedSize,
+      price: product.price,
+      salePrice: product.salePrice || undefined,
+    });
+
+    // Mostrar mensaje de confirmación
+    setShowAddedMessage(true);
+    setTimeout(() => setShowAddedMessage(false), 3000);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto">
-      <div className="min-h-screen px-4 py-8">
-        <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-2xl">
+    <div 
+      className="fixed inset-0 bg-black/50 z-50 overflow-y-auto"
+      onClick={handleBackdropClick}
+    >
+      <div className="min-h-screen px-4 py-8 flex items-center justify-center">
+        <div 
+          className="max-w-6xl w-full bg-white rounded-lg shadow-2xl relative"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header con botón cerrar */}
           <div className="flex justify-between items-center p-6 border-b">
             <div className="text-sm text-gray-500">
@@ -23,9 +79,9 @@ export default function ProductDetailView({ product, onClose }: { product: Produ
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center"
+              className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition"
             >
-              ✕
+              <X className="w-6 h-6" />
             </button>
           </div>
 
@@ -54,8 +110,9 @@ export default function ProductDetailView({ product, onClose }: { product: Produ
                     <button
                       key={img.id}
                       onClick={() => setSelectedImage(idx)}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition ${idx === selectedImage ? 'border-black' : 'border-gray-200 hover:border-gray-400'
-                        }`}
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition ${
+                        idx === selectedImage ? 'border-black' : 'border-gray-200 hover:border-gray-400'
+                      }`}
                     >
                       <img
                         src={img.standardUrl}
@@ -137,12 +194,13 @@ export default function ProductDetailView({ product, onClose }: { product: Produ
                         key={size.id}
                         onClick={() => !isOutOfStock && setSelectedSize(size.value)}
                         disabled={isOutOfStock}
-                        className={`relative py-3 rounded-lg border-2 font-medium transition-all duration-200 ${isOutOfStock
+                        className={`relative py-3 rounded-lg border-2 font-medium transition-all duration-200 ${
+                          isOutOfStock
                             ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50'
                             : isSelected
                               ? 'border-black bg-black text-white shadow-md scale-105'
                               : 'border-gray-300 hover:border-black hover:shadow-sm hover:scale-102'
-                          }`}
+                        }`}
                       >
                         <span className={isOutOfStock ? 'line-through' : ''}>
                           {size.value}
@@ -170,18 +228,31 @@ export default function ProductDetailView({ product, onClose }: { product: Produ
                 )}
               </div>
 
+              {/* Mensaje de producto agregado */}
+              {showAddedMessage && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+                  <ShoppingCart className="w-5 h-5 text-green-600" />
+                  <p className="text-green-800 font-medium">¡Producto agregado al carrito!</p>
+                </div>
+              )}
+
               {/* Botones de acción */}
               <div className="space-y-3">
                 <button
+                  onClick={handleAddToCart}
                   disabled={!selectedSize || product.sizes.every(s => s.inventory === 0)}
-                  className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
+                  <ShoppingCart className="w-5 h-5" />
                   {selectedSize ? 'Agregar al carrito' : 'Selecciona una talla'}
                 </button>
-                <button className="w-full border-2 border-black py-4 rounded-lg font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2">
-                  <span className="text-xl">♡</span>
-                  Agregar a favoritos
-                </button>
+                
+                <FavoriteButton 
+                  productId={product.id} 
+                  variant="inline"
+                  className="w-full border-2 border-black py-4 rounded-lg font-medium hover:bg-gray-50"
+                  showToast={true}
+                />
               </div>
 
               {/* Info adicional */}

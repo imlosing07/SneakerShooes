@@ -91,8 +91,6 @@ export default function ProductsComponent() {
         sizes: data.sizes || []
       };
 
-      console.log('Creating product with payload:', payload);
-
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

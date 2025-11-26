@@ -1,3 +1,5 @@
+import { UserRole } from "@/src/app/lib/constants/product-constants";
+
 export interface UserProps {
   id: string;
   name?: string | null;
@@ -6,6 +8,7 @@ export interface UserProps {
   image?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  role: UserRole;
 }
 
 export class User {

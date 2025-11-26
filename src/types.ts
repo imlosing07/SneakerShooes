@@ -1,5 +1,5 @@
 // types.ts
-import { ProductCategory, Genre } from '@/src/app/lib/constants/product-constants';
+import { ProductCategory, Genre, UserRole } from '@/src/app/lib/constants/product-constants';
 
 export interface Category {
   name: string;
@@ -157,33 +157,21 @@ export interface PaginatedProductsResponse {
   };
 }
 
-// Tipos para los filtros
-export interface Filters {
-  brand: string;
-  priceRange: string;
-  color: string;
-  isOnSale: boolean;
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: Date | null;
+  image: string | null;
+  role: UserRole;
 }
 
-// Props para cada componente
-export interface SidebarFiltersProps {
-  filters: Filters;
-  onFilterChange: (filterName: string, value: string | boolean) => void;
-  brands: string[];
-  colors: string[];
-}
-
-export interface ProductGridProps {
-  products: Product[];
-  searchTerm: string;
-  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  resultsCount: number;
-}
-
-export interface ProductCardProps {
+// Wishlist
+export interface WishlistItem {
+  id: string;
+  userId: string;
+  productId: string;
   product: Product;
-}
-
-export interface ProductCatalogProps {
-  products: Product[];
-}
+  createdAt: Date;
+  updatedAt: Date;
+} 

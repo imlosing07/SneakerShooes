@@ -32,6 +32,7 @@ export class UserRepository implements UserPort {
       updatedAt: record.updatedAt,
       emailVerified: record.emailVerified,
       image: record.image,
+      role: record.role,
     });
   }
 }

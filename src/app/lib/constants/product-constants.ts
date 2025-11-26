@@ -1,8 +1,8 @@
 // lib/constants/product.constants.ts
-import { ProductCategory, Genre } from "@prisma/client";
+import { ProductCategory, Genre, UserRole } from "@prisma/client";
 
 // Re-exportar los enums de Prisma para uso en toda la app
-export { ProductCategory, Genre } from "@prisma/client";
+export { ProductCategory, Genre, UserRole } from "@prisma/client";
 
 // Crear objetos con labels legibles para la UI
 export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
