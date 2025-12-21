@@ -1,7 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useCart } from '@/src/app/lib/contexts/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import CheckoutForm from './CheckoutForm';
+import { CheckoutData, STORE_LOCATIONS, TIME_SLOTS } from '@/src/types/checkout.types';
 
 interface CartPageProps {
     onNavigate: (page: string) => void;
@@ -9,6 +12,8 @@ interface CartPageProps {
 
 export default function CartPage({ onNavigate }: CartPageProps) {
     const { items, cartCount, totalPrice, updateQuantity, removeFromCart, clearCart } = useCart();
+    const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
+    const [isCheckoutValid, setIsCheckoutValid] = useState(false);
 
     const shippingCost = totalPrice >= 200 ? 0 : 15;
     const finalTotal = totalPrice + shippingCost;
@@ -37,6 +42,65 @@ export default function CartPage({ onNavigate }: CartPageProps) {
         );
     }
 
+
+    const handleCheckoutDataChange = (data: CheckoutData, isValid: boolean) => {
+        setCheckoutData(data);
+        setIsCheckoutValid(isValid);
+    };
+
+    const enviarWhatsApp = () => {
+        if (!checkoutData || !isCheckoutValid) {
+            alert('Por favor completa toda la información de entrega');
+            return;
+        }
+
+        // Formatear lista de productos
+        let productosTexto = '';
+        items.forEach((item) => {
+            const precio = item.salePrice || item.price;
+            const subtotal = precio * item.quantity;
+            productosTexto += `• ${item.brandName} ${item.productName}\n  Talla: ${item.size} | Cantidad: ${item.quantity}\n  S/ ${subtotal.toFixed(2)}\n\n`;
+        });
+
+        // Formatear información de entrega
+        let entregaTexto = '';
+        if (checkoutData.deliveryMethod === 'pickup') {
+            const store = STORE_LOCATIONS[checkoutData.storeLocation!];
+            entregaTexto = `*Método:* Recoger en tienda 🏪\n*Tienda:* ${store.name}\n*Dirección:* ${store.address}\n*Horario:* Lun-Sáb 10am-8pm | Dom 11am-6pm`;
+        } else {
+            const timeSlot = TIME_SLOTS[checkoutData.timeSlot!];
+            entregaTexto = `*Método:* Delivery 🚚\n*Nombre:* ${checkoutData.customerName}\n*Teléfono:* ${checkoutData.phoneNumber}\n*Dirección:* ${checkoutData.address}`;
+            if (checkoutData.reference) {
+                entregaTexto += `\n*Referencia:* ${checkoutData.reference}`;
+            }
+            entregaTexto += `\n*Horario preferido:* ${timeSlot.label} (${timeSlot.time})`;
+        }
+
+        // Mensaje completo
+        const mensaje = `🛒 *NUEVO PEDIDO - SneakerShooes*
+
+📦 *PRODUCTOS:*
+${productosTexto}
+💰 *RESUMEN:*
+Subtotal: S/ ${totalPrice.toFixed(2)}
+Envío: ${shippingCost === 0 ? 'Gratis ✨' : `S/ ${shippingCost.toFixed(2)}`}
+*TOTAL: S/ ${finalTotal.toFixed(2)}*
+
+🚚 *ENTREGA:*
+${entregaTexto}
+
+¡Gracias por tu compra! 🎉`;
+
+        const url = `https://wa.me/51959619405?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
+
+        // Opcional: Limpiar carrito después de enviar
+        // clearCart();
+        // alert('¡Pedido enviado! Te contactaremos pronto por WhatsApp.');
+        // onNavigate('/');
+    }
+
+
     return (
         <div className="min-h-screen bg-gray-50 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -58,6 +122,7 @@ export default function CartPage({ onNavigate }: CartPageProps) {
                         Vaciar carrito
                     </button>
                 </div>
+
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* Lista de productos */}
@@ -148,6 +213,9 @@ export default function CartPage({ onNavigate }: CartPageProps) {
                                 </div>
                             </div>
                         ))}
+
+                        {/* Formulario de Checkout */}
+                        <CheckoutForm onCheckoutDataChange={handleCheckoutDataChange} />
                     </div>
 
                     {/* Resumen del pedido */}
@@ -181,10 +249,14 @@ export default function CartPage({ onNavigate }: CartPageProps) {
                             </div>
 
                             <button
-                                onClick={() => alert('Funcionalidad de checkout en desarrollo')}
-                                className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition mb-3"
+                                onClick={enviarWhatsApp}
+                                disabled={!isCheckoutValid}
+                                className={`w-full py-4 rounded-lg font-medium mb-3 transition ${isCheckoutValid
+                                        ? 'bg-black text-white hover:bg-gray-800'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
                             >
-                                Proceder al pago
+                                {isCheckoutValid ? '✓ Enviar pedido por WhatsApp' : 'Completa la información de entrega'}
                             </button>
 
                             <button
@@ -221,6 +293,7 @@ export default function CartPage({ onNavigate }: CartPageProps) {
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );
