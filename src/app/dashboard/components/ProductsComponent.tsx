@@ -105,37 +105,22 @@ export default function ProductsComponent() {
       const result = await response.json();
       const newProduct = result.data || result;
 
-      if (data.imageUrls && data.imageUrls.length > 0) {
-        
-        for (const url of data.imageUrls) {
+      // Associate images directly (they already have full metadata from ProductForm)
+      if (data.images && data.images.length > 0) {
+        for (const imageData of data.images) {
           try {
-            const imageResponse = await fetch('/api/images/process-url', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                url,
-                folder: 'products'
-              }),
-            });
-
-            if (!imageResponse.ok) {
-              console.error('Failed to process image URL:', url);
-              continue;
-            }
-
-            const imageData = await imageResponse.json();
-
             await fetch(`/api/products/${newProduct.id}/images`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                originalUrl: imageData.data.originalUrl,
-                standardUrl: imageData.data.standardUrl,
-                publicId: imageData.data.publicId
+                originalUrl: imageData.originalUrl,
+                standardUrl: imageData.standardUrl,
+                publicId: imageData.publicId
               }),
             });
           } catch (error) {
-            console.error('Error adding image to product:', error);
+            console.error('Error associating image to product:', error);
+            // Continue with next image even if one fails
           }
         }
       }
@@ -186,32 +171,20 @@ export default function ProductsComponent() {
         throw new Error(errorData.error || 'Failed to update product');
       }
 
-      if (data.imageUrls && data.imageUrls.length > 0) {
-        const currentImageUrls = selectedProduct.images?.map(img => img.standardUrl) || [];
-        const newImageUrls = data.imageUrls.filter((url: string) => !currentImageUrls.includes(url));
+      // Add new images (filter out existing ones by publicId)
+      if (data.images && data.images.length > 0) {
+        const currentPublicIds = selectedProduct.images?.map((img: any) => img.publicId) || [];
+        const newImages = data.images.filter((img: any) => !currentPublicIds.includes(img.publicId));
 
-        for (const url of newImageUrls) {
+        for (const imageData of newImages) {
           try {
-            const imageResponse = await fetch('/api/images/process-url', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                url,
-                folder: 'products'
-              }),
-            });
-
-            if (!imageResponse.ok) continue;
-
-            const imageData = await imageResponse.json();
-
             await fetch(`/api/products/${selectedProduct.id}/images`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                originalUrl: imageData.data.originalUrl,
-                standardUrl: imageData.data.standardUrl,
-                publicId: imageData.data.publicId
+                originalUrl: imageData.originalUrl,
+                standardUrl: imageData.standardUrl,
+                publicId: imageData.publicId
               }),
             });
           } catch (error) {
@@ -240,7 +213,7 @@ export default function ProductsComponent() {
     try {
 
       const fullProduct = await fetch(`/api/products/${product.id}`).then(res => res.json()).then(data => data.data || data);
-      
+
       if (!fullProduct) {
         throw new Error('No product data received');
       }

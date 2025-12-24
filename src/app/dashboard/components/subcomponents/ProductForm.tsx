@@ -30,7 +30,13 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
   });
 
   const [sizes, setSizes] = useState<Array<{ value: string; inventory: number | null }>>(initialData?.sizes || []);
-  const [imageUrls, setImageUrls] = useState<string[]>(initialData?.images?.map((img: any) => img.standardUrl) || []);
+  const [images, setImages] = useState<Array<{ originalUrl: string; standardUrl: string; publicId: string }>>(
+    initialData?.images?.map((img: any) => ({
+      originalUrl: img.originalUrl,
+      standardUrl: img.standardUrl,
+      publicId: img.publicId
+    })) || []
+  );
   const [newImageUrl, setNewImageUrl] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -49,7 +55,13 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
         isNew: initialData.isNew ?? true,
       });
       setSizes(initialData.sizes || []);
-      setImageUrls(initialData.images?.map((img: any) => img.standardUrl) || []);
+      setImages(
+        initialData.images?.map((img: any) => ({
+          originalUrl: img.originalUrl,
+          standardUrl: img.standardUrl,
+          publicId: img.publicId
+        })) || []
+      );
     } else if (!isEdit) {
       // Limpiar el form si no es edición
       setFormData({
@@ -64,7 +76,7 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
         isNew: true,
       });
       setSizes([]);
-      setImageUrls([]);
+      setImages([]);
     }
   }, [initialData?.id, isEdit]); // ✅ Usar initialData?.id en lugar de initialData completo
 
@@ -76,14 +88,42 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
   };
   const removeSize = (index: number) => setSizes(sizes.filter((_: any, i: number) => i !== index));
 
-  const addImageUrl = () => {
+  const addImageUrl = async () => {
     if (newImageUrl.trim()) {
-      setImageUrls([...imageUrls, newImageUrl.trim()]);
-      setNewImageUrl('');
+      try {
+        setUploadingImage(true);
+        // Process external URL to get full metadata
+        const response = await fetch('/api/images/process-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: newImageUrl.trim(),
+            folder: 'products'
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to process URL');
+        }
+
+        const result = await response.json();
+        setImages([...images, {
+          originalUrl: result.data.originalUrl,
+          standardUrl: result.data.standardUrl,
+          publicId: result.data.publicId
+        }]);
+        setNewImageUrl('');
+      } catch (error: any) {
+        console.error('Error processing image URL:', error);
+        alert(`Failed to add image: ${error.message}`);
+      } finally {
+        setUploadingImage(false);
+      }
     }
   };
 
-  const removeImage = (index: number) => setImageUrls(imageUrls.filter((_, i) => i !== index));
+  const removeImage = (index: number) => setImages(images.filter((_: any, i: number) => i !== index));
 
   // Subir imagen a Cloudinary
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +146,11 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
       }
 
       const result = await response.json();
-      setImageUrls([...imageUrls, result.data.standardUrl]);
+      setImages([...images, {
+        originalUrl: result.data.originalUrl,
+        standardUrl: result.data.standardUrl,
+        publicId: result.data.publicId
+      }]);
     } catch (error: any) {
       console.error('Error uploading image:', error);
       alert(`Failed to upload image: ${error.message}`);
@@ -117,7 +161,7 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // ✅ Validar que todos los sizes tengan value y inventory válidos
     const validSizes = sizes.filter((size: any) => {
       const hasValue = size.value && size.value.trim() !== '';
@@ -144,11 +188,11 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
       value: size.value.trim(),
       inventory: parseInt(size.inventory) || 0
     }));
-    
+
     await onSubmit({
       ...formData,
       sizes: cleanSizes,
-      imageUrls,
+      images,
     });
   };
 
@@ -318,7 +362,7 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
             <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-medium text-gray-900">Product Images</h3>
             </div>
-            
+
             {/* Subir archivo */}
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
               <input
@@ -354,9 +398,9 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
 
             {/* Preview imágenes */}
             <div className="grid grid-cols-3 md:grid-cols-5 gap-3 max-h-60 overflow-y-auto">
-              {imageUrls.map((url, index) => (
+              {images.map((image: any, index: number) => (
                 <div key={index} className="relative border rounded p-2 group">
-                  <img src={url} alt={`Product ${index + 1}`} className="w-full h-20 object-cover rounded" />
+                  <img src={image.standardUrl} alt={`Product ${index + 1}`} className="w-full h-20 object-cover rounded" />
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
@@ -366,7 +410,7 @@ export default function ProductForm({ brands, initialData, onSubmit, onCancel, l
                   </button>
                 </div>
               ))}
-              {imageUrls.length === 0 && (
+              {images.length === 0 && (
                 <div className="col-span-3 md:col-span-5 flex flex-col items-center justify-center py-8 text-gray-400">
                   <PhotoIcon className="w-12 h-12 mb-2" />
                   <p className="text-sm">No images added yet</p>

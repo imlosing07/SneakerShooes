@@ -26,8 +26,8 @@ export interface ProductImageUploadOptions {
 
 // Image validation requirements
 const IMAGE_REQUIREMENTS = {
-  MIN_WIDTH: 1200,
-  MIN_HEIGHT: 1200,
+  MIN_WIDTH: 1000,
+  MIN_HEIGHT: 1000,
   TARGET_WIDTH: 2000,
   TARGET_HEIGHT: 2000,
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB limit
