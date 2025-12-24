@@ -285,9 +285,9 @@ export function useProducts(options: UseProductsOptions = {}) {
    */
   return {
     // Datos principales
-    productsData,           // Objeto completo con products y meta
-    products: productsData.products,  // Array de productos directo para compatibilidad
-    pagination: productsData.meta,    // Meta/paginación directa para compatibilidad
+    productsData, // Objeto completo con products y meta
+    products: productsData.products, // Array de productos directo para compatibilidad
+    pagination: productsData.meta, // Meta/paginación directa para compatibilidad
     
     // Estados de UI
     loading,

@@ -1,24 +1,10 @@
-import { Product } from "@/src/types";
-import CategoryPageLayout from "../components/CategoryPageLayout";
+import HombreView from "./HombreView";
+import { getProducts } from "@/src/services/product";
 
-export default function MensPage({
-    products,
-    onProductClick
-}: {
-    products: Product[];
-    onProductClick: (p: Product) => void
-}) {
-    return (
-        <CategoryPageLayout
-            products={products}
-            onProductClick={onProductClick}
-            genre="MENS"
-            heroConfig={{
-                image: "/categoryImages/desktopMen.jpg",
-                title: "Hombre",
-                subtitle: "Descubre nuestra selección de calzado urbano y deportivo",
-                gradientFrom: "blue-900"
-            }}
-        />
-    );
+export default async function HombrePage() {
+  // Fetch products server-side
+  const response = await getProducts({ genre: "MENS" });
+  const products = response.products;
+
+  return <HombreView products={products} />;
 }

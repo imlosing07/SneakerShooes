@@ -1,8 +1,9 @@
 "use client";
 import { CATEGORIES } from "@/src/types";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
-function HeroSection({ onNavigate }: { onNavigate: (page: string) => void }) {
+function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = CATEGORIES.map((category) => ({
@@ -42,12 +43,12 @@ function HeroSection({ onNavigate }: { onNavigate: (page: string) => void }) {
             <h1 className="text-5xl md:text-6xl font-bold">{currentData.title}</h1>
             <p className="text-xl text-gray-200">{currentData.description}</p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <button
-                onClick={() => onNavigate(currentData.ctaPrimary.href)}
-                className="bg-white text-black px-8 py-3 rounded font-medium hover:bg-gray-100 transition"
+              <Link
+                href={currentData.ctaPrimary.href}
+                className="bg-white text-black px-8 py-3 rounded font-medium hover:bg-gray-100 transition inline-block"
               >
                 {currentData.ctaPrimary.text}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -58,7 +59,7 @@ function HeroSection({ onNavigate }: { onNavigate: (page: string) => void }) {
               key={idx}
               onClick={() => setCurrentSlide(idx)}
               className={`h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-12' : 'bg-white/50 w-2'
-                }`}
+              }`}
             />
           ))}
         </div>

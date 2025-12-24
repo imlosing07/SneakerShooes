@@ -3,12 +3,10 @@ import ProductCard from "./ProductCard";
 
 export default function ProductGrid({
   products,
-  title,
   onProductClick
 }: {
   products: Product[];
-  title: string;
-  onProductClick: (product: Product) => void;
+  onProductClick?: (product: Product) => void;
 }) {
   return (
     <section className="pb-16 bg-white">
@@ -23,7 +21,7 @@ export default function ProductGrid({
               <ProductCard
                 key={product.id}
                 product={product}
-                onClick={() => onProductClick(product)}
+                onClick={onProductClick ? () => onProductClick(product) : undefined}
               />
             ))}
           </div>

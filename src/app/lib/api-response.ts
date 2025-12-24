@@ -9,18 +9,18 @@ export interface ApiResponse<T> {
     }>;
   }
   
-  export function createSuccessResponse<T>(data: T, message?: string): ApiResponse<T> {
-    return {
-      success: true,
-      data,
-      message
-    };
-  }
+export function createSuccessResponse<T>(data: T, message?: string): ApiResponse<T> {
+  return {
+    success: true,
+    data,
+    message
+  };
+}
   
-  export function createErrorResponse(message: string, errors?: Array<{path: string, message: string}>): ApiResponse<null> {
-    return {
-      success: false,
-      message,
-      errors
-    };
-  }
+export function createErrorResponse(message: string, errors?: Array<{path: string, message: string}>): ApiResponse<null> {
+  return {
+    success: false,
+    message,
+    errors
+  };
+}

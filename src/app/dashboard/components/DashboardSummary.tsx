@@ -275,7 +275,7 @@ export default function DashboardSummary() {
                     className={`bg-white rounded-lg shadow-md overflow-hidden border-l-4 ${stat.priority === 'high' ? 'border-l-red-500' :
                       stat.priority === 'medium' ? 'border-l-orange-500' :
                         'border-l-gray-300'
-                      } hover:shadow-lg transition-shadow`}
+                    } hover:shadow-lg transition-shadow`}
                   >
                     <div className="p-6">
                       <div className="flex justify-between items-start">

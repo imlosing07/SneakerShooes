@@ -1,24 +1,10 @@
-import { Product } from "@/src/types";
-import CategoryPageLayout from "../components/CategoryPageLayout";
+import NinosView from "./NinosView";
+import { getProducts } from "@/src/services/product";
 
-export default function KidsPage({
-    products,
-    onProductClick
-}: {
-    products: Product[];
-    onProductClick: (p: Product) => void
-}) {
-    return (
-        <CategoryPageLayout
-            products={products}
-            onProductClick={onProductClick}
-            genre="KIDS"
-            heroConfig={{
-                image: "/categoryImages/desktopChildren.webp",
-                title: "Niños",
-                subtitle: "Comodidad y diversión para los más pequeños",
-                gradientFrom: "orange-500"
-            }}
-        />
-    );
+export default async function NinosPage() {
+  // Fetch products server-side
+  const response = await getProducts({ genre: "KIDS" });
+  const products = response.products;
+
+  return <NinosView products={products} />;
 }

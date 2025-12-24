@@ -49,10 +49,10 @@ export interface Size {
 export interface ProductImage {
   id: string;
   productId: string;
-  originalUrl: string;   // Imagen de alta calidad (2000px)
-  standardUrl: string;   // Imagen estándar (600-840px)
-  publicId: string;      // ID público en Cloudinary
-  isMain: boolean;       // Indica si es la imagen principal
+  originalUrl: string; // Imagen de alta calidad (2000px)
+  standardUrl: string; // Imagen estándar (600-840px)
+  publicId: string; // ID público en Cloudinary
+  isMain: boolean; // Indica si es la imagen principal
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,7 +80,7 @@ export interface Product {
   brandId: string;
   brand?: Brand;
   images: ProductImage[];
-  wishlistItems?: any[];
+  wishlistItems?: WishlistItem[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -124,7 +124,7 @@ export interface UpdateProductDTO {
 
   // ✅ Eliminamos images de aquí - se maneja por separado
   sizes?: {
-    id?: string;  // Para actualizar existentes
+    id?: string; // Para actualizar existentes
     value: string;
     inventory: number;
   }[];

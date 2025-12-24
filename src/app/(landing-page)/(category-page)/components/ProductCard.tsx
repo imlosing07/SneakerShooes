@@ -1,7 +1,9 @@
 import { Product } from "@/src/types";
 import FavoriteButton from "../../components/FavoriteButton";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function ProductCard({ product, onClick }: { product: Product; onClick?: () => void }) {
+export default function ProductCard({ product, onClick }: { product: Product; onClick?: () => void }): React.JSX.Element {
   const hasDiscount = product.salePrice && product.salePrice < product.price;
   const discountPercent = hasDiscount
     ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
@@ -9,8 +11,8 @@ export default function ProductCard({ product, onClick }: { product: Product; on
 
   const mainImage = product.images.find(img => img.isMain) || product.images[0];
 
-  return (
-    <div onClick={onClick} className="group cursor-pointer">
+  const content = (
+    <div className="group cursor-pointer h-full" onClick={onClick ? onClick : undefined}>
       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
         {/* Badges */}
         <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
@@ -34,9 +36,11 @@ export default function ProductCard({ product, onClick }: { product: Product; on
 
         {/* Imagen */}
         {mainImage ? (
-          <img
+          <Image
             src={mainImage.standardUrl}
             alt={product.name}
+            width={700}
+            height={700}
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
         ) : (
@@ -72,4 +76,15 @@ export default function ProductCard({ product, onClick }: { product: Product; on
       </div>
     </div>
   );
+
+  // If no onClick is provided, wrap with Link
+  if (!onClick) {
+    return (
+      <Link href={`/producto/${product.id}`} className="block h-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

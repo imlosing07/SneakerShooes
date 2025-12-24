@@ -1,4 +1,5 @@
 import { Product } from "@/src/types";
+import Image from "next/image";
 
 export default function FormalProductCard({ 
   product, 
@@ -36,16 +37,20 @@ export default function FormalProductCard({
         {/* Imagen principal */}
         {mainImage && (
           <div className="relative w-full h-full">
-            <img
+            <Image
               src={mainImage.originalUrl || mainImage.standardUrl}
               alt={product.name}
+              width={240}
+              height={240}
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
             />
             {/* Imagen secundaria en hover */}
             {secondaryImage && (
-              <img
+              <Image
                 src={secondaryImage.originalUrl || secondaryImage.standardUrl}
                 alt={product.name}
+                width={240}
+                height={240}
                 className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
               />
             )}
@@ -137,9 +142,11 @@ export default function FormalProductCard({
                 key={idx}
                 className="w-6 h-6 rounded-full border-2 border-gray-200 overflow-hidden hover:border-gray-900 transition-colors cursor-pointer"
               >
-                <img 
+                <Image 
                   src={img.standardUrl} 
                   alt="" 
+                  width={240}
+                  height={240}
                   className="w-full h-full object-cover"
                 />
               </div>

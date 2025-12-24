@@ -33,7 +33,6 @@ export default function FilterBar({
   filters,
   onFilterChange,
   availableBrands,
-  showGenreFilter = false,
   currentGenre
 }: FilterBarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,92 +138,92 @@ export default function FilterBar({
             {/* Panel expandible de filtros avanzados */}
             {isOpen && (
               <div className="mt-4 pt-4 border-t grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Marcas */}
-            <div>
-              <h3 className="font-medium mb-3 text-sm">Marcas</h3>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {availableBrands.map((brand) => (
-                  <label key={brand} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="checkbox"
-                      checked={filters.brands.includes(brand)}
-                      onChange={() => toggleBrand(brand)}
-                      className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
-                    />
-                    <span className="text-sm">{brand}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+                {/* Marcas */}
+                <div>
+                  <h3 className="font-medium mb-3 text-sm">Marcas</h3>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {availableBrands.map((brand) => (
+                      <label key={brand} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                        <input
+                          type="checkbox"
+                          checked={filters.brands.includes(brand)}
+                          onChange={() => toggleBrand(brand)}
+                          className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                        />
+                        <span className="text-sm">{brand}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Rango de precios */}
-            <div>
-              <h3 className="font-medium mb-3 text-sm">Precio</h3>
-              <div className="space-y-2">
-                {PRICE_RANGES.map((range) => (
-                  <label key={range.label} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                    <input
-                      type="radio"
-                      name="priceRange"
-                      checked={
-                        filters.priceRange?.min === range.min &&
+                {/* Rango de precios */}
+                <div>
+                  <h3 className="font-medium mb-3 text-sm">Precio</h3>
+                  <div className="space-y-2">
+                    {PRICE_RANGES.map((range) => (
+                      <label key={range.label} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                        <input
+                          type="radio"
+                          name="priceRange"
+                          checked={
+                            filters.priceRange?.min === range.min &&
                         filters.priceRange?.max === range.max
-                      }
-                      onChange={() => setPriceRange(range)}
-                      className="w-4 h-4 border-gray-300 text-black focus:ring-black"
-                    />
-                    <span className="text-sm">{range.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+                          }
+                          onChange={() => setPriceRange(range)}
+                          className="w-4 h-4 border-gray-300 text-black focus:ring-black"
+                        />
+                        <span className="text-sm">{range.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Filtros activos */}
-            <div>
-              <h3 className="font-medium mb-3 text-sm">Filtros activos</h3>
-              <div className="flex flex-wrap gap-2">
-                {filters.categories.map((cat) => (
-                  <span
-                    key={cat}
-                    className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs"
-                  >
-                    {PRODUCT_CATEGORY_LABELS[cat]}
-                    <button
-                      onClick={() => toggleCategory(cat)}
-                      className="hover:text-red-600"
-                    >
+                {/* Filtros activos */}
+                <div>
+                  <h3 className="font-medium mb-3 text-sm">Filtros activos</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {filters.categories.map((cat) => (
+                      <span
+                        key={cat}
+                        className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs"
+                      >
+                        {PRODUCT_CATEGORY_LABELS[cat]}
+                        <button
+                          onClick={() => toggleCategory(cat)}
+                          className="hover:text-red-600"
+                        >
                       ×
-                    </button>
-                  </span>
-                ))}
-                {filters.brands.map((brand) => (
-                  <span
-                    key={brand}
-                    className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs"
-                  >
-                    {brand}
-                    <button
-                      onClick={() => toggleBrand(brand)}
-                      className="hover:text-red-600"
-                    >
+                        </button>
+                      </span>
+                    ))}
+                    {filters.brands.map((brand) => (
+                      <span
+                        key={brand}
+                        className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs"
+                      >
+                        {brand}
+                        <button
+                          onClick={() => toggleBrand(brand)}
+                          className="hover:text-red-600"
+                        >
                       ×
-                    </button>
-                  </span>
-                ))}
-                {filters.priceRange && (
-                  <span className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs">
-                    {PRICE_RANGES.find(
-                      r => r.min === filters.priceRange?.min && r.max === filters.priceRange?.max
-                    )?.label}
-                    <button
-                      onClick={() => setPriceRange(null)}
-                      className="hover:text-red-600"
-                    >
+                        </button>
+                      </span>
+                    ))}
+                    {filters.priceRange && (
+                      <span className="inline-flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full text-xs">
+                        {PRICE_RANGES.find(
+                          r => r.min === filters.priceRange?.min && r.max === filters.priceRange?.max
+                        )?.label}
+                        <button
+                          onClick={() => setPriceRange(null)}
+                          className="hover:text-red-600"
+                        >
                       ×
-                    </button>
-                  </span>
-                )}
-              </div>
+                        </button>
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

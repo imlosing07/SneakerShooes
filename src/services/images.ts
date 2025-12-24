@@ -7,10 +7,10 @@ import { prismaClientGlobal } from '../app/lib/prisma';
 
 // Enhanced types for image variants
 export interface ImageDetails {
-  originalUrl: string;   // High quality image (2000px)
-  standardUrl: string;   // Standard image using t_standard template
-  publicId: string;      // To facilitate later deletion
-  dimensions: {          // Added actual dimensions
+  originalUrl: string; // High quality image (2000px)
+  standardUrl: string; // Standard image using t_standard template
+  publicId: string; // To facilitate later deletion
+  dimensions: { // Added actual dimensions
     width: number;
     height: number;
   };
@@ -21,7 +21,7 @@ export interface ProductImageUploadOptions {
   folder?: string;
   publicId?: string;
   overwrite?: boolean;
-  tags?: string[];       // Added tags for better organization
+  tags?: string[]; // Added tags for better organization
 }
 
 // Image validation requirements
@@ -65,7 +65,7 @@ function validateUploadOptions(options: ProductImageUploadOptions): Required<Omi
   }
   
   // Validate publicId if provided
-  let publicId = options.publicId?.trim() || undefined;
+  const publicId = options.publicId?.trim() || undefined;
   if (publicId && !/^[a-zA-Z0-9_\-]+$/.test(publicId)) {
     throw new Error('Invalid publicId. Only alphanumeric characters, hyphens, and underscores are allowed');
   }
@@ -320,33 +320,33 @@ export async function deleteMultipleCloudinaryImages(publicIds: string[]): Promi
 }
 
 export async function getImagebyId(id: string) {
-    try {
-        const image = await prismaClientGlobal.productImage.findUnique({
-            where: { id },
-        });
-        if (!image) return null;
+  try {
+    const image = await prismaClientGlobal.productImage.findUnique({
+      where: { id },
+    });
+    if (!image) return null;
 
-        return image;
-    } catch (error) {
-        console.error('Error fetching image by ID:', error);
-        throw new Error('Error fetching image by ID');
-    }
+    return image;
+  } catch (error) {
+    console.error('Error fetching image by ID:', error);
+    throw new Error('Error fetching image by ID');
+  }
 }
 
 export async function del(id: string) {
-    try {
-        const image = await getImagebyId(id);
-        if (!image) {
-            throw new Error('Image not found');
-        }
-        // First delete from Cloudinary
-        await deleteCloudinaryImage(image.publicId);
-        // Then delete from database
-        await prismaClientGlobal.productImage.delete({
-            where: { id },
-        });
-    } catch (error) {
-        console.error('Error deleting image:', error);
-        throw new Error('Error deleting image');
+  try {
+    const image = await getImagebyId(id);
+    if (!image) {
+      throw new Error('Image not found');
     }
+    // First delete from Cloudinary
+    await deleteCloudinaryImage(image.publicId);
+    // Then delete from database
+    await prismaClientGlobal.productImage.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    throw new Error('Error deleting image');
+  }
 }

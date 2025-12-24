@@ -6,7 +6,7 @@ import {getErrorStatusCode} from '@/src/app/api/images/upload/route'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { productId, url, folder } = body;
+    const { url, folder } = body;
     
     // Only basic input validation - let service handle the rest
     if (!url || typeof url !== 'string') {

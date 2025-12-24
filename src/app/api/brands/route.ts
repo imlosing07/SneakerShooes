@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBrands, createBrand } from '@/src/services/brand'
 
 // Manejar solicitudes GET y POST a /api/brands
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const results = await getBrands();
     const resultsData = results.brands.map((brand) => {

@@ -1,24 +1,10 @@
-import { Product } from "@/src/types";
-import CategoryPageLayout from "../components/CategoryPageLayout";
+import MujerView from "./MujerView";
+import { getProducts } from "@/src/services/product";
 
-export default function WomensPage({
-    products,
-    onProductClick
-}: {
-    products: Product[];
-    onProductClick: (p: Product) => void
-}) {
-    return (
-        <CategoryPageLayout
-            products={products}
-            onProductClick={onProductClick}
-            genre="WOMENS"
-            heroConfig={{
-                image: "/categoryImages/desktopWomen.webp",
-                title: "Mujer",
-                subtitle: "Estilo y comodidad en cada paso",
-                gradientFrom: "pink-600"
-            }}
-        />
-    );
+export default async function MujerPage() {
+  // Fetch products server-side
+  const response = await getProducts({ genre: "WOMENS" });
+  const products = response.products;
+
+  return <MujerView products={products} />;
 }
