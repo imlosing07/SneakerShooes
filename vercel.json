@@ -1,0 +1,10 @@
+{
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "CLOUDINARY_API_SECRET": "@cloudinary_api_secret",
+    "CLOUDINARY_API_KEY": "@cloudinary_api_key"
+  }
+}

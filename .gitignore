@@ -27,6 +27,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.production
 
 # vercel
 .vercel
@@ -36,3 +37,7 @@ yarn-error.log*
 next-env.d.ts
 
 .vscode/
+
+# deployment instructions (contains sensitive info)
+DEPLOY_INSTRUCTIONS.md
+QUICK_DEPLOY_GUIDE.md
