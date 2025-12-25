@@ -5,7 +5,6 @@ import { SessionProvider } from 'next-auth/react';
 import { Poppins } from 'next/font/google';
 import { WishlistProvider } from '@/src/app/lib/contexts/WishlistContext';
 import { CartProvider } from '@/src/app/lib/contexts/CartContext';
-import Footer from '@/src/app/(landing-page)/components/Footer';
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +31,6 @@ export default async function RootLayout({
           <CartProvider>
             <WishlistProvider>
               {children}
-              <Footer />
             </WishlistProvider>
           </CartProvider>
         </SessionProvider>

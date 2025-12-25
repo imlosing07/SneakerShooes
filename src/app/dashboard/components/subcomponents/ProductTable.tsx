@@ -12,11 +12,11 @@ interface ProductsTableProps {
 
 export default function ProductsTable({ products, loading, onEdit, onDelete, onManageImages }: ProductsTableProps) {
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading products...</div>;
+    return <div className="p-8 text-center text-gray-500">Cargando productos...</div>;
   }
 
   if (products.length === 0) {
-    return <div className="p-8 text-center text-gray-500">No products found.</div>;
+    return <div className="p-8 text-center text-gray-500">No se encontraron productos.</div>;
   }
 
   return (
@@ -26,12 +26,12 @@ export default function ProductsTable({ products, loading, onEdit, onDelete, onM
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Brand</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-              <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Imagen</th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marca</th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
+              <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+              <th className="px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -62,13 +62,13 @@ export default function ProductsTable({ products, loading, onEdit, onDelete, onM
                   </td>
                   <td className="px-3 py-4 text-right">
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => onEdit(product)} className="text-blue-500 hover:text-blue-700" title="Edit">
+                      <button onClick={() => onEdit(product)} className="text-blue-500 hover:text-blue-700" title="Editar">
                         <PencilIcon className="h-5 w-5" />
                       </button>
-                      <button onClick={() => onManageImages(product)} className="text-green-500 hover:text-green-700" title="Images">
+                      <button onClick={() => onManageImages(product)} className="text-green-500 hover:text-green-700" title="Imágenes">
                         <PhotoIcon className="h-5 w-5" />
                       </button>
-                      <button onClick={() => onDelete(product.id)} className="text-red-500 hover:text-red-700" title="Delete">
+                      <button onClick={() => onDelete(product.id)} className="text-red-500 hover:text-red-700" title="Eliminar">
                         <TrashIcon className="h-5 w-5" />
                       </button>
                     </div>
@@ -108,13 +108,13 @@ export default function ProductsTable({ products, loading, onEdit, onDelete, onM
               </div>
               <div className="mt-3 flex justify-end gap-2 border-t pt-3">
                 <button onClick={() => onEdit(product)} className="text-blue-500 hover:text-blue-700 px-3 py-1.5 border border-blue-500 rounded text-sm">
-                  Edit
+                  Editar
                 </button>
                 <button onClick={() => onManageImages(product)} className="text-green-500 hover:text-green-700 px-3 py-1.5 border border-green-500 rounded text-sm">
-                  Images
+                  Imágenes
                 </button>
                 <button onClick={() => onDelete(product.id)} className="text-red-500 hover:text-red-700 px-3 py-1.5 border border-red-500 rounded text-sm">
-                  Delete
+                  Eliminar
                 </button>
               </div>
             </div>

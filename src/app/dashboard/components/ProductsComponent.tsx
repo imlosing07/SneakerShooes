@@ -133,10 +133,10 @@ export default function ProductsComponent() {
       });
 
       setShowForm(false);
-      alert('Product created successfully!');
+      alert('¡Producto creado exitosamente!');
     } catch (err: any) {
       console.error("Error creating product:", err);
-      alert(`Error creating product: ${err.message}`);
+      alert(`Error al crear producto: ${err.message}`);
     }
   }
 
@@ -202,10 +202,10 @@ export default function ProductsComponent() {
 
       setSelectedProduct(null);
       setShowForm(false);
-      alert('Product updated successfully!');
+      alert('¡Producto actualizado exitosamente!');
     } catch (err: any) {
       console.error("Error updating product:", err);
-      alert(`Error updating product: ${err.message}`);
+      alert(`Error al actualizar producto: ${err.message}`);
     }
   }
 
@@ -227,7 +227,7 @@ export default function ProductsComponent() {
   }
 
   async function handleDeleteProduct(id: string) {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
 
     try {
       const response = await fetch(`/api/products/${id}`, {
@@ -235,7 +235,7 @@ export default function ProductsComponent() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete product');
+        throw new Error('Error al eliminar producto');
       }
 
       await fetchProducts({
@@ -245,10 +245,10 @@ export default function ProductsComponent() {
         pageSize,
       });
 
-      alert('Product deleted successfully!');
+      alert('¡Producto eliminado exitosamente!');
     } catch (err: any) {
       console.error("Error deleting product:", err);
-      alert(`Error deleting product: ${err.message}`);
+      alert(`Error al eliminar producto: ${err.message}`);
     }
   }
 
@@ -260,7 +260,7 @@ export default function ProductsComponent() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className={`${lusitana.className} text-2xl font-bold`}>
-          Products Management
+          Gestión de Productos
         </h2>
         <button
           onClick={() => {
@@ -270,7 +270,7 @@ export default function ProductsComponent() {
           className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
         >
           <PlusIcon className="w-5 h-5" />
-          {showForm ? 'Cancel' : 'Add Product'}
+          {showForm ? 'Cancelar' : 'Agregar Producto'}
         </button>
       </div>
 
@@ -284,11 +284,11 @@ export default function ProductsComponent() {
       <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2">
-            <label className="block mb-1 text-sm font-medium">Search:</label>
+            <label className="block mb-1 text-sm font-medium">Buscar:</label>
             <div className="flex">
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Buscar productos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -298,18 +298,18 @@ export default function ProductsComponent() {
                 onClick={handleSearch}
                 className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 transition-colors"
               >
-                Search
+                Buscar
               </button>
             </div>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Brand:</label>
+            <label className="block mb-1 text-sm font-medium">Marca:</label>
             <select
               value={selectedBrandId}
               onChange={(e) => setSelectedBrandId(e.target.value)}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">All Brands</option>
+              <option value="">Todas las Marcas</option>
               {brands.map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
@@ -318,13 +318,13 @@ export default function ProductsComponent() {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium">Category:</label>
+            <label className="block mb-1 text-sm font-medium">Categoría:</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as ProductCategory | '')}
               className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">All Categories</option>
+              <option value="">Todas las Categorías</option>
               {PRODUCT_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
                   {PRODUCT_CATEGORY_LABELS[category]}
@@ -344,7 +344,7 @@ export default function ProductsComponent() {
             }}
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition-colors"
           >
-            Clear Filters
+            Limpiar Filtros
           </button>
         </div>
       </div>
@@ -385,17 +385,17 @@ export default function ProductsComponent() {
               disabled={pagination.page === 1}
               className="px-4 py-2 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
             >
-              Previous
+              Anterior
             </button>
             <span className="text-sm text-gray-700">
-              Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
+              Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
             </span>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
               disabled={pagination.page === pagination.totalPages}
               className="px-4 py-2 border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
             >
-              Next
+              Siguiente
             </button>
           </div>
         )}

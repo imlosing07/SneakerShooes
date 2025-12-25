@@ -1,18 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Store, Truck, MapPin, Phone, User, Home, Clock, MessageCircle } from 'lucide-react';
+import { Store, Truck, MapPin, User, Home, Clock, MessageCircle, ExternalLink } from 'lucide-react';
 import { CheckoutData, DeliveryMethod, StoreLocation, DeliveryTimeSlot, STORE_LOCATIONS, TIME_SLOTS } from '@/src/types/checkout.types';
 
 interface CheckoutFormProps {
-    onCheckoutDataChange: (data: CheckoutData, isValid: boolean) => void;
+  onCheckoutDataChange: (data: CheckoutData, isValid: boolean) => void;
 }
 
 export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps) {
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>('pickup');
-  const [storeLocation, setStoreLocation] = useState<StoreLocation>('centro');
+  const [storeLocation, setStoreLocation] = useState<StoreLocation>('miraflores');
   const [customerName, setCustomerName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [reference, setReference] = useState('');
   const [timeSlot, setTimeSlot] = useState<DeliveryTimeSlot>('afternoon');
@@ -24,10 +23,8 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
     } else {
       return !!(
         customerName.trim() &&
-                phoneNumber.trim() &&
-                phoneNumber.length >= 9 &&
-                address.trim() &&
-                timeSlot
+        address.trim() &&
+        timeSlot
       );
     }
   };
@@ -38,17 +35,17 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
       deliveryMethod,
       ...(deliveryMethod === 'pickup'
         ? { storeLocation }
-        : { customerName, phoneNumber, address, reference, timeSlot }
+        : { customerName, address, reference, timeSlot }
       )
     };
     onCheckoutDataChange(checkoutData, isFormValid());
-  }, [deliveryMethod, storeLocation, customerName, phoneNumber, address, reference, timeSlot]);
+  }, [deliveryMethod, storeLocation, customerName, address, reference, timeSlot]);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
         <Truck className="w-5 h-5" />
-                Información de Entrega
+        Información de Entrega
       </h2>
 
       {/* Selector de Método */}
@@ -60,13 +57,13 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
             type="button"
             onClick={() => setDeliveryMethod('pickup')}
             className={`relative p-4 rounded-lg border-2 transition-all ${deliveryMethod === 'pickup'
-              ? 'border-black bg-gray-50'
-              : 'border-gray-200 hover:border-gray-300 bg-white'
-            }`}
+                ? 'border-black bg-gray-50'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+              }`}
           >
             <div className="flex items-center gap-3">
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${deliveryMethod === 'pickup' ? 'border-black' : 'border-gray-300'
-              }`}>
+                }`}>
                 {deliveryMethod === 'pickup' && (
                   <div className="w-3 h-3 rounded-full bg-black"></div>
                 )}
@@ -84,13 +81,13 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
             type="button"
             onClick={() => setDeliveryMethod('delivery')}
             className={`relative p-4 rounded-lg border-2 transition-all ${deliveryMethod === 'delivery'
-              ? 'border-black bg-gray-50'
-              : 'border-gray-200 hover:border-gray-300 bg-white'
-            }`}
+                ? 'border-black bg-gray-50'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+              }`}
           >
             <div className="flex items-center gap-3">
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${deliveryMethod === 'delivery' ? 'border-black' : 'border-gray-300'
-              }`}>
+                }`}>
                 {deliveryMethod === 'delivery' && (
                   <div className="w-3 h-3 rounded-full bg-black"></div>
                 )}
@@ -108,13 +105,13 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
       {/* Contenido Condicional */}
       <div className="space-y-4">
         {deliveryMethod === 'pickup' ? (
-        // PICKUP - Selector de tienda
+          // PICKUP - Selector de tienda
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-                            Selecciona la tienda
+              Selecciona la tienda
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {(Object.keys(STORE_LOCATIONS) as StoreLocation[]).map((key) => {
                 const store = STORE_LOCATIONS[key];
                 return (
@@ -123,23 +120,36 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
                     type="button"
                     onClick={() => setStoreLocation(key)}
                     className={`w-full p-4 rounded-lg border-2 transition-all text-left ${storeLocation === key
-                      ? 'border-black bg-gray-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                        ? 'border-black bg-gray-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 flex-shrink-0 ${storeLocation === key ? 'border-black' : 'border-gray-300'
-                      }`}>
+                        }`}>
                         {storeLocation === key && (
                           <div className="w-3 h-3 rounded-full bg-black"></div>
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 flex items-center gap-2">
                           <span className="text-lg">{store.icon}</span>
                           {store.name}
                         </p>
                         <p className="text-sm text-gray-600 mt-1">{store.address}</p>
+
+                        {/* Enlace al mapa */}
+                        <a
+                          href={store.mapUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-700 underline mt-2 inline-flex items-center gap-1"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MapPin className="w-3 h-3" />
+                          Ver ubicación en Google Maps
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
                     </div>
                   </button>
@@ -153,13 +163,13 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
             </div>
           </div>
         ) : (
-        // DELIVERY - Formulario completo
+          // DELIVERY - Formulario completo (SIN teléfono)
           <div className="space-y-4">
             {/* Nombre */}
             <div>
               <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 <User className="w-4 h-4" />
-                                Nombre completo *
+                Nombre completo *
               </label>
               <input
                 type="text"
@@ -172,32 +182,11 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
               />
             </div>
 
-            {/* Teléfono */}
-            <div>
-              <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                                Teléfono *
-              </label>
-              <input
-                type="tel"
-                id="phoneNumber"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                placeholder="959619405"
-                maxLength={9}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition"
-                required
-              />
-              {phoneNumber && phoneNumber.length < 9 && (
-                <p className="text-xs text-red-600 mt-1">Ingresa un número válido (9 dígitos)</p>
-              )}
-            </div>
-
             {/* Dirección */}
             <div>
               <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 <Home className="w-4 h-4" />
-                                Dirección completa *
+                Dirección completa *
               </label>
               <input
                 type="text"
@@ -214,7 +203,7 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
             <div>
               <label htmlFor="reference" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
-                                Referencia (opcional)
+                Referencia (opcional)
               </label>
               <input
                 type="text"
@@ -230,7 +219,7 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
             <div>
               <label htmlFor="timeSlot" className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                                Horario preferido de entrega *
+                Horario preferido de entrega *
               </label>
               <select
                 id="timeSlot"
@@ -252,7 +241,7 @@ export default function CheckoutForm({ onCheckoutDataChange }: CheckoutFormProps
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
               <p className="text-sm text-green-800">
-                <span className="font-medium">🚚 Delivery:</span> Nos comunicaremos por WhatsApp para coordinar la entrega
+                <span className="font-medium">🚚 Delivery:</span> Nos comunicaremos por WhatsApp para coordinar la entrega y el costo de envío
               </p>
             </div>
           </div>

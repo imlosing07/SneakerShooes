@@ -3,7 +3,7 @@ import { prismaClientGlobal } from '@/src/app/lib/prisma';
 import { Prisma } from '@prisma/client';
 import { Brand } from '@/src/types';
 
-export async function getBrands(): Promise<{
+export async function getBrands(page: number = 1, pageSize: number = 10): Promise<{
     brands: Array<Brand & { count: number }>,
     pagination: {
         page: number,
@@ -12,7 +12,7 @@ export async function getBrands(): Promise<{
         totalPages: number
     }
 }> {
-  const page = 1, pageSize = 10, limit = 10;
+  const limit = pageSize;
 
   try {
     const brandsRaw = await prismaClientGlobal.brand.findMany({

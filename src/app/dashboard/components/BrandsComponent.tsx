@@ -29,7 +29,7 @@ export default function BrandsComponent() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('/api/brands');
+      const res = await fetch(`/api/brands?page=${pagination.page}&pageSize=${pagination.pageSize}`);
       const data = await res.json();
       setBrands(data.brands);
       setPagination(data.pagination);
@@ -89,7 +89,7 @@ export default function BrandsComponent() {
   }
 
   async function handleDeleteBrand(id: string) {
-    if (!confirm('Are you sure you want to delete this brand?')) return;
+    if (!confirm('¿Estás seguro de eliminar esta marca?')) return;
 
     try {
       setLoading(true);
@@ -114,7 +114,7 @@ export default function BrandsComponent() {
           className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
         >
           <PlusIcon className="w-5 h-5" />
-          {showCreateForm ? 'Cancel' : 'Add Brand'}
+          {showCreateForm ? 'Cancelar' : 'Agregar Marca'}
         </button>
       </div>
 
@@ -151,16 +151,16 @@ export default function BrandsComponent() {
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {loading && !brands.length ? (
-          <div className="p-8 text-center text-gray-500">Loading brands...</div>
+          <div className="p-8 text-center text-gray-500">Cargando marcas...</div>
         ) : brands.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                   <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Logo</th>
-                  <th scope="col" className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products</th>
-                  <th scope="col" className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th scope="col" className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Productos</th>
+                  <th scope="col" className="px-3 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -190,14 +190,14 @@ export default function BrandsComponent() {
                       <button
                         onClick={() => handleSelectBrand(brand)}
                         className="text-blue-500 hover:text-blue-700 mr-2 sm:mr-4"
-                        title="Edit"
+                        title="Editar"
                       >
                         <PencilIcon className="h-4 w-4 sm:h-5 sm:w-5 inline" />
                       </button>
                       <button
                         onClick={() => handleDeleteBrand(brand.id)}
                         className="text-red-500 hover:text-red-700"
-                        title="Delete"
+                        title="Eliminar"
                       >
                         <TrashIcon className="h-4 w-4 sm:h-5 sm:w-5 inline" />
                       </button>
@@ -208,7 +208,7 @@ export default function BrandsComponent() {
             </table>
           </div>
         ) : (
-          <div className="p-8 text-center text-gray-500">No brands found.</div>
+          <div className="p-8 text-center text-gray-500">No se encontraron marcas.</div>
         )}
 
         {brands.length > 0 && (
@@ -219,22 +219,22 @@ export default function BrandsComponent() {
                 disabled={pagination.page <= 1 || loading}
                 className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${pagination.page <= 1 ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
               >
-                Previous
+                Anterior
               </button>
               <button
                 onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                 disabled={pagination.page >= pagination.totalPages || loading}
                 className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${pagination.page >= pagination.totalPages ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
               >
-                Next
+                Siguiente
               </button>
             </div>
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{brands.length > 0 ? (pagination.page - 1) * pagination.pageSize + 1 : 0}</span> to{' '}
+                  Mostrando <span className="font-medium">{brands.length > 0 ? (pagination.page - 1) * pagination.pageSize + 1 : 0}</span> a{' '}
                   <span className="font-medium">{Math.min(pagination.page * pagination.pageSize, pagination.total)}</span>{' '}
-                  of <span className="font-medium">{pagination.total}</span> results
+                  de <span className="font-medium">{pagination.total}</span> resultados
                 </p>
               </div>
               <div>
@@ -244,7 +244,7 @@ export default function BrandsComponent() {
                     disabled={pagination.page <= 1 || loading}
                     className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${pagination.page <= 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
                   >
-                    <span className="sr-only">Previous</span>
+                    <span className="sr-only">Anterior</span>
                     &larr;
                   </button>
                   <button
@@ -252,7 +252,7 @@ export default function BrandsComponent() {
                     disabled={pagination.page >= pagination.totalPages || loading}
                     className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${pagination.page >= pagination.totalPages ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'}`}
                   >
-                    <span className="sr-only">Next</span>
+                    <span className="sr-only">Siguiente</span>
                     &rarr;
                   </button>
                 </nav>

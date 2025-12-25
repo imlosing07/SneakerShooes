@@ -3,9 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBrands, createBrand } from '@/src/services/brand'
 
 // Manejar solicitudes GET y POST a /api/brands
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const results = await getBrands();
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '10');
+    
+    const results = await getBrands(page, pageSize);
     const resultsData = results.brands.map((brand) => {
       return {
         id: brand.id,

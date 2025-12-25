@@ -13,8 +13,7 @@ export default function CartPage() {
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
   const [isCheckoutValid, setIsCheckoutValid] = useState(false);
 
-  const shippingCost = totalPrice >= 200 ? 0 : 15;
-  const finalTotal = totalPrice + shippingCost;
+  const finalTotal = totalPrice; // Sin costo de envío
 
   if (cartCount === 0) {
     return (
@@ -23,16 +22,16 @@ export default function CartPage() {
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <ShoppingBag className="w-20 h-20 mx-auto text-gray-300 mb-4" />
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                            Tu carrito está vacío
+              Tu carrito está vacío
             </h2>
             <p className="text-gray-600 mb-6">
-                            ¡Explora nuestra colección y encuentra tus zapatillas perfectas!
+              ¡Explora nuestra colección y encuentra tus zapatillas perfectas!
             </p>
             <Link
               href="/"
               className="inline-block bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition"
             >
-                            Explorar productos
+              Explorar productos
             </Link>
           </div>
         </div>
@@ -64,14 +63,14 @@ export default function CartPage() {
     let entregaTexto = '';
     if (checkoutData.deliveryMethod === 'pickup') {
       const store = STORE_LOCATIONS[checkoutData.storeLocation!];
-      entregaTexto = `*Método:* Recoger en tienda 🏪\n*Tienda:* ${store.name}\n*Dirección:* ${store.address}\n*Horario:* Lun-Sáb 10am-8pm | Dom 11am-6pm`;
+      entregaTexto = `*Método:* Recoger en tienda 🏪\n*Tienda:* ${store.name}\n*Dirección:* ${store.address}\n*Horario:* Lun-Sáb 10am-8pm | Dom 11am-6pm\n*Ver ubicación:* ${store.mapUrl}`;
     } else {
       const timeSlot = TIME_SLOTS[checkoutData.timeSlot!];
-      entregaTexto = `*Método:* Delivery 🚚\n*Nombre:* ${checkoutData.customerName}\n*Teléfono:* ${checkoutData.phoneNumber}\n*Dirección:* ${checkoutData.address}`;
+      entregaTexto = `*Método:* Delivery 🚚\n*Nombre:* ${checkoutData.customerName}\n*Dirección:* ${checkoutData.address}`;
       if (checkoutData.reference) {
         entregaTexto += `\n*Referencia:* ${checkoutData.reference}`;
       }
-      entregaTexto += `\n*Horario preferido:* ${timeSlot.label} (${timeSlot.time})`;
+      entregaTexto += `\n*Horario preferido:* ${timeSlot.label} (${timeSlot.time})\n\n📍 *Nota:* El costo de envío se coordinará según la ubicación`;
     }
 
     // Mensaje completo
@@ -79,10 +78,7 @@ export default function CartPage() {
 
 📦 *PRODUCTOS:*
 ${productosTexto}
-💰 *RESUMEN:*
-Subtotal: S/ ${totalPrice.toFixed(2)}
-Envío: ${shippingCost === 0 ? 'Gratis ✨' : `S/ ${shippingCost.toFixed(2)}`}
-*TOTAL: S/ ${finalTotal.toFixed(2)}*
+💰 *TOTAL: S/ ${finalTotal.toFixed(2)}*
 
 🚚 *ENTREGA:*
 ${entregaTexto}
@@ -91,11 +87,6 @@ ${entregaTexto}
 
     const url = `https://wa.me/51959619405?text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank');
-
-    // Opcional: Limpiar carrito después de enviar
-    // clearCart();
-    // alert('¡Pedido enviado! Te contactaremos pronto por WhatsApp.');
-    // onNavigate('/');
   }
 
 
@@ -103,10 +94,10 @@ ${entregaTexto}
     <div className="min-h-screen bg-gray-50 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Carrito de Compras
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Carrito de Compras
             </h1>
             <p className="text-gray-600">
               {cartCount} {cartCount === 1 ? 'producto' : 'productos'}
@@ -114,24 +105,24 @@ ${entregaTexto}
           </div>
           <button
             onClick={clearCart}
-            className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-2"
+            className="text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-2 self-start sm:self-auto"
           >
             <Trash2 className="w-4 h-4" />
-                        Vaciar carrito
+            Vaciar carrito
           </button>
         </div>
 
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Lista de productos */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
             {items.map((item) => (
               <div
                 key={`${item.productId}-${item.size}`}
-                className="bg-white rounded-lg shadow-sm p-6 flex gap-6"
+                className="bg-white rounded-lg shadow-sm p-4 sm:p-6 flex gap-3 sm:gap-6"
               >
                 {/* Imagen */}
-                <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                   {item.productImage ? (
                     <Image
                       src={item.productImage}
@@ -142,7 +133,7 @@ ${entregaTexto}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                                            Sin imagen
+                      Sin imagen
                     </div>
                   )}
                 </div>
@@ -154,16 +145,16 @@ ${entregaTexto}
                       <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                         {item.brandName}
                       </p>
-                      <h3 className="font-medium text-gray-900 truncate">
+                      <h3 className="font-medium text-gray-900 text-sm sm:text-base truncate">
                         {item.productName}
                       </h3>
                       <p className="text-sm text-gray-600 mt-1">
-                                                Talla: <span className="font-medium">{item.size}</span>
+                        Talla: <span className="font-medium">{item.size}</span>
                       </p>
                     </div>
                     <button
                       onClick={() => removeFromCart(item.productId, item.size)}
-                      className="text-gray-400 hover:text-red-500 transition"
+                      className="text-gray-400 hover:text-red-500 transition ml-2"
                       aria-label="Eliminar producto"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -175,17 +166,17 @@ ${entregaTexto}
                     <div className="flex items-center border border-gray-300 rounded-lg">
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                        className="p-2 hover:bg-gray-100 transition"
+                        className="p-2 sm:p-2.5 hover:bg-gray-100 transition"
                         aria-label="Disminuir cantidad"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
-                      <span className="px-4 font-medium text-gray-900">
+                      <span className="px-3 sm:px-4 font-medium text-gray-900">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                        className="p-2 hover:bg-gray-100 transition"
+                        className="p-2 sm:p-2.5 hover:bg-gray-100 transition"
                         aria-label="Aumentar cantidad"
                       >
                         <Plus className="w-4 h-4" />
@@ -196,16 +187,16 @@ ${entregaTexto}
                     <div className="text-right">
                       {item.salePrice ? (
                         <div>
-                          <p className="font-bold text-red-600">
-                                                        S/ {(item.salePrice * item.quantity).toFixed(2)}
+                          <p className="font-bold text-red-600 text-sm sm:text-base">
+                            S/ {(item.salePrice * item.quantity).toFixed(2)}
                           </p>
                           <p className="text-xs text-gray-400 line-through">
-                                                        S/ {(item.price * item.quantity).toFixed(2)}
+                            S/ {(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       ) : (
-                        <p className="font-bold text-gray-900">
-                                                    S/ {(item.price * item.quantity).toFixed(2)}
+                        <p className="font-bold text-gray-900 text-sm sm:text-base">
+                          S/ {(item.price * item.quantity).toFixed(2)}
                         </p>
                       )}
                     </div>
@@ -220,9 +211,9 @@ ${entregaTexto}
 
           {/* Resumen del pedido */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:sticky lg:top-24">
               <h2 className="text-lg font-bold text-gray-900 mb-4">
-                                Resumen del pedido
+                Resumen del pedido
               </h2>
 
               <div className="space-y-3 mb-4 pb-4 border-b">
@@ -230,17 +221,6 @@ ${entregaTexto}
                   <span>Subtotal</span>
                   <span className="font-medium">S/ {totalPrice.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Envío</span>
-                  <span className={`font-medium ${shippingCost === 0 ? 'text-green-600' : ''}`}>
-                    {shippingCost === 0 ? '¡Gratis!' : `S/ ${shippingCost.toFixed(2)}`}
-                  </span>
-                </div>
-                {totalPrice < 200 && totalPrice > 0 && (
-                  <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
-                                        💡 Agrega S/ {(200 - totalPrice).toFixed(2)} más para obtener envío gratis
-                  </p>
-                )}
               </div>
 
               <div className="flex justify-between text-lg font-bold text-gray-900 mb-6">
@@ -251,30 +231,23 @@ ${entregaTexto}
               <button
                 onClick={enviarWhatsApp}
                 disabled={!isCheckoutValid}
-                className={`w-full py-4 rounded-lg font-medium mb-3 transition ${isCheckoutValid
-                  ? 'bg-black text-white hover:bg-gray-800'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className={`w-full py-3 sm:py-4 rounded-lg font-medium mb-3 transition text-sm sm:text-base ${isCheckoutValid
+                    ? 'bg-black text-white hover:bg-gray-800'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
               >
                 {isCheckoutValid ? '✓ Enviar pedido por WhatsApp' : 'Completa la información de entrega'}
               </button>
 
               <Link
                 href="/"
-                className="w-full border-2 border-gray-300 py-3 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
+                className="w-full border-2 border-gray-300 py-2 sm:py-3 rounded-lg font-medium hover:bg-gray-50 transition text-center block text-sm sm:text-base"
               >
-                                Seguir comprando
+                Seguir comprando
               </Link>
 
               {/* Beneficios */}
               <div className="mt-6 space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <span className="text-xl">🚚</span>
-                  <div>
-                    <p className="font-medium">Envío gratis</p>
-                    <p className="text-gray-600 text-xs">En compras mayores a S/ 200</p>
-                  </div>
-                </div>
                 <div className="flex items-start gap-3">
                   <span className="text-xl">↩️</span>
                   <div>
