@@ -12,7 +12,25 @@ export const metadata: Metadata = {
     default: 'SneakerShooes',
   },
   description: 'Zapatillas zapatos de la mejor calidad y precio, entrega rápida y segura',
-  // metadataBase: new URL('https://mywebsite.com'),
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
+  openGraph: {
+    title: 'SneakerShooes',
+    description: 'Zapatillas y zapatos de la mejor calidad y precio. Entrega rápida y segura.',
+    images: [
+      {
+        url: '/openGrpahimagen.webp',
+        width: 1200,
+        height: 630,
+        alt: 'SneakerShooes - Zapatillas y zapatos',
+      },
+    ],
+    locale: 'es_PE',
+    type: 'website',
+  },
 };
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "500", "700"] });
