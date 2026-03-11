@@ -8,7 +8,7 @@ export default function HombreView({ products }: { products: Product[] }) {
       products={products}
       genre="MENS"
       heroConfig={{
-        image: "/categoryImages/desktopMen.jpg",
+        image: "/categoryImages/desktopMen.webp",
         title: "Hombre",
         subtitle: "Descubre nuestra selección de calzado urbano y deportivo",
         gradientFrom: "blue-900"

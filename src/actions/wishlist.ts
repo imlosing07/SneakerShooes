@@ -68,11 +68,28 @@ export async function toggleFavorite(productId: string) {
         isInWishlist: true,
       };
     }
-  } catch (error) {
-    console.error('Error in toggleFavorite:', error);
+  } catch (error: unknown) {
+    // Log detallado para depuración
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('Error in toggleFavorite:', errorMessage);
+
+    // Manejar caso Prisma P2025: registro no encontrado (producto eliminado)
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code: string }).code === 'P2025'
+    ) {
+      return {
+        success: false,
+        message: 'El producto ya no existe o fue eliminado',
+        isInWishlist: false,
+      };
+    }
+
     return {
       success: false,
-      message: 'Error al procesar la solicitud',
+      message: `Error al procesar la solicitud: ${errorMessage}`,
       isInWishlist: false,
     };
   }

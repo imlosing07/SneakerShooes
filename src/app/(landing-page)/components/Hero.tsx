@@ -1,12 +1,13 @@
 "use client";
-import { CATEGORIES } from "@/src/types";
+import { HERO_CATEGORIES, Category } from "../../../types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = CATEGORIES.map((category) => ({
+  const slides = HERO_CATEGORIES.map((category: Category) => ({
     desktopImage: category.imagenDesktop,
     mobileImage: category.imagenMobile,
     title: category.name,
@@ -27,15 +28,15 @@ function HeroSection() {
     <section className="relative h-screen overflow-hidden">
       <div className="absolute inset-0 bg-black/40 z-10" />
 
-      <picture className="absolute inset-0 w-full h-full">
-        <source media="(max-width: 767px)" srcSet={currentData.mobileImage} />
-        <source media="(min-width: 768px)" srcSet={currentData.desktopImage} />
-        <img
-          src={currentData.desktopImage}
-          alt="Hero Background"
-          className="w-full h-full object-cover"
-        />
-      </picture>
+      {/* Next.js Image con priority para LCP */}
+      <Image
+        src={currentData.desktopImage}
+        alt={`Colección ${currentData.title}`}
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
 
       <div className="relative z-20 h-full flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -54,12 +55,13 @@ function HeroSection() {
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-          {slides.map((_, idx) => (
+          {slides.map((slide, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentSlide(idx)}
+              aria-label={`Ir a slide ${idx + 1}: ${slide.title}`}
               className={`h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-12' : 'bg-white/50 w-2'
-              }`}
+                }`}
             />
           ))}
         </div>

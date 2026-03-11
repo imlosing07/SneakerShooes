@@ -41,6 +41,7 @@ export default function ProductCard({ product, onClick }: { product: Product; on
             alt={product.name}
             width={700}
             height={700}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
           />
         ) : (

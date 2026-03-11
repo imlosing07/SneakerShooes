@@ -34,6 +34,8 @@ function BrandsCarousel() {
                   alt={brand.name}
                   width={150}
                   height={60}
+                  sizes="150px"
+                  style={{ height: 'auto' }}
                   className="object-contain"
                 />
               </div>

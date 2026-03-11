@@ -40,8 +40,8 @@ export default function FormalProductCard({
             <Image
               src={mainImage.originalUrl || mainImage.standardUrl}
               alt={product.name}
-              width={240}
-              height={240}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 group-hover:opacity-0"
             />
             {/* Imagen secundaria en hover */}
@@ -49,8 +49,8 @@ export default function FormalProductCard({
               <Image
                 src={secondaryImage.originalUrl || secondaryImage.standardUrl}
                 alt={product.name}
-                width={240}
-                height={240}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700"
               />
             )}

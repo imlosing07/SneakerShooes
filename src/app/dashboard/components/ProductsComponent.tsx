@@ -256,6 +256,72 @@ export default function ProductsComponent() {
     handleSelectProduct(product);
   }
 
+  async function handleToggleStatus(product: Product, field: 'featured' | 'isNew') {
+    try {
+      const newValue = !product[field];
+      const response = await fetch(`/api/products/${product.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [field]: newValue }),
+      });
+
+      if (!response.ok) throw new Error(`Failed to update ${field}`);
+
+      await fetchProducts({
+        category: selectedCategory || undefined,
+        brandId: selectedBrandId || undefined,
+        page: currentPage,
+        pageSize,
+        query: searchQuery || undefined,
+      });
+    } catch (err: any) {
+      console.error(`Error toggling ${field}:`, err);
+      alert(`Error: ${err.message}`);
+    }
+  }
+
+  function handleExportCSV() {
+    if (!products || products.length === 0) {
+      alert('No hay productos para exportar');
+      return;
+    }
+
+    try {
+      // CSV Headers
+      const headers = ['ID', 'Nombre', 'Marca', 'Categoría', 'Género', 'Precio', 'Precio Oferta', 'Destacado', 'Nuevo', 'Stock Total'];
+      
+      const rows = products.map(p => {
+        const totalStock = p.sizes?.reduce((sum, s) => sum + s.inventory, 0) || 0;
+        return [
+          p.id,
+          p.name,
+          p.brand?.name || 'N/A',
+          p.category,
+          p.genre,
+          p.price,
+          p.salePrice || '',
+          p.featured ? 'Sí' : 'No',
+          p.isNew ? 'Sí' : 'No',
+          totalStock
+        ].map(val => `"${val}"`).join(',');
+      });
+
+      const csvContent = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `inventario_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error exporting CSV:', err);
+      alert('Error al exportar inventario');
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -375,6 +441,8 @@ export default function ProductsComponent() {
           onEdit={handleSelectProduct}
           onDelete={handleDeleteProduct}
           onManageImages={handleManageImages}
+          onToggleStatus={handleToggleStatus}
+          onExportCSV={handleExportCSV}
         />
 
         {/* Pagination */}

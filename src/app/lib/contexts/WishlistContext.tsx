@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { toggleFavorite as toggleFavoriteAction, getUserWishlistIds } from '@/src/actions/wishlist';
 import { useSession } from 'next-auth/react';
 
@@ -19,6 +19,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const { data: session, status } = useSession();
+
+  // useRef para siempre tener el valor más reciente sin stale closures
+  const wishlistIdsRef = useRef<Set<string>>(wishlistIds);
+  wishlistIdsRef.current = wishlistIds;
+
+  // Flag para evitar toggles simultáneos en el mismo producto
+  const togglingRef = useRef<Set<string>>(new Set());
 
   // Cargar wishlist inicial cuando el usuario esté autenticado
   const loadWishlist = useCallback(async () => {
@@ -49,14 +56,21 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     loadWishlist();
   }, [loadWishlist]);
 
-  // Toggle favorite con optimistic update CORREGIDO
+  // Toggle favorite con optimistic update — usa ref para evitar stale closure
   const toggleFavorite = useCallback(async (productId: string): Promise<boolean> => {
-    // Guardar estado anterior para revertir si falla
-    const previousWishlistIds = new Set(wishlistIds);
-    const wasInWishlist = wishlistIds.has(productId);
+    // Evitar doble-click en el mismo producto
+    if (togglingRef.current.has(productId)) {
+      return wishlistIdsRef.current.has(productId);
+    }
+    togglingRef.current.add(productId);
+
+    // Leer siempre el estado más actual desde el ref
+    const currentIds = wishlistIdsRef.current;
+    const previousWishlistIds = new Set(currentIds);
+    const wasInWishlist = currentIds.has(productId);
         
     // Optimistic update
-    const newWishlistIds = new Set(wishlistIds);
+    const newWishlistIds = new Set(currentIds);
     if (wasInWishlist) {
       newWishlistIds.delete(productId);
     } else {
@@ -81,8 +95,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       setWishlistIds(previousWishlistIds);
       console.error('Error toggling favorite:', error);
       return wasInWishlist;
+    } finally {
+      togglingRef.current.delete(productId);
     }
-  }, [wishlistIds]);
+  }, []); // Sin dependencia de wishlistIds — usa el ref
 
   // Verificar si un producto está en wishlist
   const isInWishlist = useCallback((productId: string): boolean => {

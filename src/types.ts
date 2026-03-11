@@ -8,30 +8,30 @@ export interface Category {
   imagenMobile: string;
 }
 
-export const CATEGORIES: Category[] = [
+export const HERO_CATEGORIES: Category[] = [
   {
     name: 'Hombre',
     navigationName: 'hombre',
-    imagenDesktop: 'categoryImages/desktopMen.jpg',
-    imagenMobile: 'categoryImages/mobileMen.jpg',
+    imagenDesktop: '/categoryImages/desktopMen.webp',
+    imagenMobile: '/categoryImages/mobileMen.webp',
   },
   {
     name: 'Mujer',
     navigationName: 'mujer',
-    imagenDesktop: 'categoryImages/desktopWomen.webp',
-    imagenMobile: 'categoryImages/mobileWomen.webp',
+    imagenDesktop: '/categoryImages/desktopWomen.webp',
+    imagenMobile: '/categoryImages/mobileWomen.webp',
   },
   {
     name: 'Niños',
     navigationName: 'ninos',
-    imagenDesktop: 'categoryImages/desktopChildren.webp',
-    imagenMobile: 'categoryImages/mobileChildren.webp',
+    imagenDesktop: '/categoryImages/desktopChildren.webp',
+    imagenMobile: '/categoryImages/mobileChildren.webp',
   },
   {
     name: 'Formal',
     navigationName: 'formal',
-    imagenDesktop: 'categoryImages/desktopFormal.webp',
-    imagenMobile: 'categoryImages/mobileFormal.webp',
+    imagenDesktop: '/categoryImages/desktopFormal.webp',
+    imagenMobile: '/categoryImages/mobileFormal.webp',
   }
 ];
 

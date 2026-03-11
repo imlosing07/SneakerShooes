@@ -51,41 +51,45 @@ export default function CartPage() {
       return;
     }
 
+    // Emojis via CodePoints para evitar corrupción de encoding
+    const cartIcon = String.fromCodePoint(0x1F6D2);     // 🛒
+    const boxIcon = String.fromCodePoint(0x1F4E6);      // 📦
+    const moneyIcon = String.fromCodePoint(0x1F4B0);    // 💰
+    const truckIcon = String.fromCodePoint(0x1F69A);    // 🚚
+    const partyIcon = String.fromCodePoint(0x1F389);    // 🎉
+    const storeIcon = String.fromCodePoint(0x1F3EA);    // 🏪
+    const pinIcon = String.fromCodePoint(0x1F4CD);      // 📍
+    const sparkleIcon = String.fromCodePoint(0x2728);   // ✨
+    const checkIcon = String.fromCodePoint(0x2705);     // ✅
+
     // Formatear lista de productos
     let productosTexto = '';
     items.forEach((item) => {
       const precio = item.salePrice || item.price;
       const subtotal = precio * item.quantity;
-      productosTexto += `• ${item.brandName} ${item.productName}\n  Talla: ${item.size} | Cantidad: ${item.quantity}\n  S/ ${subtotal.toFixed(2)}\n\n`;
+      productosTexto += `${sparkleIcon} *${item.brandName} ${item.productName}*\n  Talla: ${item.size} | Cantidad: ${item.quantity}\n  S/ ${subtotal.toFixed(2)}\n\n`;
     });
 
     // Formatear información de entrega
     let entregaTexto = '';
     if (checkoutData.deliveryMethod === 'pickup') {
-      const store = STORE_LOCATIONS[checkoutData.storeLocation!];
-      entregaTexto = `*Método:* Recoger en tienda 🏪\n*Tienda:* ${store.name}\n*Dirección:* ${store.address}\n*Horario:* Lun-Sáb 10am-8pm | Dom 11am-6pm\n*Ver ubicación:* ${store.mapUrl}`;
+      const storeInfo = STORE_LOCATIONS[checkoutData.storeLocation!];
+      entregaTexto = `*Metodo:* Recoger en tienda ${storeIcon}\n*Tienda:* ${storeInfo.name}\n*Direccion:* ${storeInfo.address}\n*Horario:* Lun-Sab 10am-8pm | Dom 11am-6pm\n*Ver ubicacion:* ${storeInfo.mapUrl}`;
     } else {
       const timeSlot = TIME_SLOTS[checkoutData.timeSlot!];
-      entregaTexto = `*Método:* Delivery 🚚\n*Nombre:* ${checkoutData.customerName}\n*Dirección:* ${checkoutData.address}`;
+      entregaTexto = `*Metodo:* Delivery ${truckIcon}\n*Nombre:* ${checkoutData.customerName}\n*Direccion:* ${checkoutData.address}`;
       if (checkoutData.reference) {
         entregaTexto += `\n*Referencia:* ${checkoutData.reference}`;
       }
-      entregaTexto += `\n*Horario preferido:* ${timeSlot.label} (${timeSlot.time})\n\n📍 *Nota:* El costo de envío se coordinará según la ubicación`;
+      entregaTexto += `\n*Horario preferido:* ${timeSlot.label} (${timeSlot.time})\n\n${pinIcon} *Nota:* El costo de envio se coordinara segun la ubicacion`;
     }
 
     // Mensaje completo
-    const mensaje = `🛒 *NUEVO PEDIDO - SneakerShooes*
+    const mensaje = `${cartIcon} *NUEVO PEDIDO - SneakerShooes*\n\n${boxIcon} *PRODUCTOS:*\n${productosTexto}\n${moneyIcon} *TOTAL: S/ ${finalTotal.toFixed(2)}*\n\n${truckIcon} *ENTREGA:*\n${entregaTexto}\n\n${checkIcon} Gracias por tu compra! ${partyIcon}`;
 
-📦 *PRODUCTOS:*
-${productosTexto}
-💰 *TOTAL: S/ ${finalTotal.toFixed(2)}*
-
-🚚 *ENTREGA:*
-${entregaTexto}
-
-¡Gracias por tu compra! 🎉`;
-
-    const url = `https://wa.me/51959619405?text=${encodeURIComponent(mensaje)}`;
+    // IMPORTANTE: Usar api.whatsapp.com/send en lugar de wa.me para evitar redirección que corrompe encoding
+    const encodedText = encodeURIComponent(mensaje);
+    const url = `https://api.whatsapp.com/send?phone=51959619405&text=${encodedText}`;
     window.open(url, '_blank');
   }
 

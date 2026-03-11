@@ -7,21 +7,21 @@ import { Genre, ProductCategory } from "@/src/app/lib/constants/product-constant
 import Image from "next/image";
 
 interface FilterState {
-    categories: ProductCategory[];
-    genres: Genre[];
-    brands: string[];
-    priceRange: { min: number; max: number } | null;
+  categories: ProductCategory[];
+  genres: Genre[];
+  brands: string[];
+  priceRange: { min: number; max: number } | null;
 }
 
 interface CategoryPageLayoutProps {
-    products: Product[];
-    genre: Genre;
-    heroConfig: {
-        image: string;
-        title: string;
-        subtitle: string;
-        gradientFrom: string; // ej: "blue-900"
-    };
+  products: Product[];
+  genre: Genre;
+  heroConfig: {
+    image: string;
+    title: string;
+    subtitle: string;
+    gradientFrom: string; // ej: "blue-900"
+  };
 }
 
 export default function CategoryPageLayout({
@@ -64,18 +64,18 @@ export default function CategoryPageLayout({
 
     // Ordenar
     switch (sortBy) {
-    case "price-asc":
-      result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
-      break;
-    case "price-desc":
-      result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
-      break;
-    case "newest":
-      result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      break;
-    case "featured":
-      result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-      break;
+      case "price-asc":
+        result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price));
+        break;
+      case "price-desc":
+        result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price));
+        break;
+      case "newest":
+        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case "featured":
+        result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        break;
     }
 
     return result;
@@ -101,7 +101,7 @@ export default function CategoryPageLayout({
               heroConfig.gradientFrom === 'pink-600' ? '219, 39, 119' :
                 heroConfig.gradientFrom === 'orange-500' ? '249, 115, 22' :
                   '0, 0, 0'
-            }, 0.9), transparent)`
+              }, 0.9), transparent)`
           }}
         />
 
@@ -144,7 +144,7 @@ export default function CategoryPageLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-                            Mostrando {filteredProducts.length} productos
+              Mostrando {filteredProducts.length} productos
             </p>
             <select
               value={sortBy}
@@ -180,7 +180,7 @@ export default function CategoryPageLayout({
               })}
               className="text-sm text-black underline hover:no-underline"
             >
-                            Limpiar todos los filtros
+              Limpiar todos los filtros
             </button>
           </div>
         ) : (
