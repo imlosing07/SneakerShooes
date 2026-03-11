@@ -7,6 +7,7 @@ import { WishlistProvider } from '@/src/app/lib/contexts/WishlistContext';
 import { CartProvider } from '@/src/app/lib/contexts/CartContext';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sneaker-shooes.vercel.app'),
   title: {
     template: '%s | SneakerShooes',
     default: 'SneakerShooes',
@@ -20,6 +21,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'SneakerShooes',
     description: 'Zapatillas y zapatos de la mejor calidad y precio. Entrega rápida y segura.',
+    url: 'https://sneaker-shooes.vercel.app',
+    siteName: 'SneakerShooes',
     images: [
       {
         url: '/openGrpahimagen.webp',
@@ -31,7 +34,6 @@ export const metadata: Metadata = {
     locale: 'es_PE',
     type: 'website',
   },
-  metadataBase: new URL('https://sneaker-shooes.vercel.app'),
 };
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "500", "700"] });
