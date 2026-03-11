@@ -104,11 +104,6 @@ export function useProducts(options: UseProductsOptions = {}) {
       // La respuesta viene envuelta en { data: { products, meta } }
       const data: BackendPaginatedResponse = responseData.data;
       
-      console.log('Product fetch result in useProducts hook:', {
-        productsCount: data.products?.length || 0,
-        meta: data.meta
-      });
-      
       setProductsData(data);
       
     } catch (err) {

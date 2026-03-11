@@ -10,14 +10,12 @@ export async function GET(request: NextRequest) {
     const pageSize = parseInt(searchParams.get('pageSize') || '10');
     
     const results = await getBrands(page, pageSize);
-    const resultsData = results.brands.map((brand) => {
-      return {
-        id: brand.id,
-        name: brand.name,
-        logoUrl: brand.logoUrl,
-      }
-    }
-    )
+    const resultsData = results.brands.map((brand) => ({
+      id: brand.id,
+      name: brand.name,
+      logoUrl: brand.logoUrl,
+      count: brand.count,
+    }))
     const pagination = results.pagination;
     const total = results.pagination.total;
 

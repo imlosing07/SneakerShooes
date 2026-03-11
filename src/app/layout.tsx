@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     locale: 'es_PE',
     type: 'website',
   },
+  metadataBase: new URL('https://sneaker-shooes.vercel.app'),
 };
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "500", "700"] });
