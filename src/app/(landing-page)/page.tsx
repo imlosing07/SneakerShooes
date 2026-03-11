@@ -1,10 +1,10 @@
 import HeroSection from "./components/Hero";
 import BrandsCarousel from "./components/BrandsCarousel";
-import ProductGrid from "./(category-page)/components/ProductGrid";
+import FeaturedShowcase from "./components/FeaturedShowcase";
 import { getProducts } from "@/src/services/product";
 
 export default async function HomePage() {
-  // Fetch products server-side
+  // Fetch destacados + nuevos para la sección principal
   const response = await getProducts({ limit: 12, featured: true });
   const products = response.products;
 
@@ -12,10 +12,7 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <BrandsCarousel />
-      <ProductGrid
-        products={products}
-        title="Colección Premium"
-      />
+      <FeaturedShowcase products={products} />
     </>
   );
 }

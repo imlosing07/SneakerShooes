@@ -89,7 +89,7 @@ export default function CartPage() {
 
     // IMPORTANTE: Usar api.whatsapp.com/send en lugar de wa.me para evitar redirección que corrompe encoding
     const encodedText = encodeURIComponent(mensaje);
-    const url = `https://api.whatsapp.com/send?phone=51959619405&text=${encodedText}`;
+    const url = `https://api.whatsapp.com/send?phone=51902898742&text=${encodedText}`;
     window.open(url, '_blank');
   }
 

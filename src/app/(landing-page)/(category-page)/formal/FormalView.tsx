@@ -110,8 +110,8 @@ export default function FormalView({ products }: { products: Product[] }) {
         </div>
 
         {/* Contenido del hero */}
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
-          <div className="max-w-4xl space-y-8 animate-fade-in">
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 w-full overflow-hidden">
+          <div className="max-w-4xl w-full space-y-6 md:space-y-8 animate-fade-in">
             {/* Badge superior */}
             <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-full">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -127,8 +127,8 @@ export default function FormalView({ products }: { products: Product[] }) {
             </h1>
 
             {/* Subtítulo elegante */}
-            <p className="text-xl md:text-2xl text-gray-300/90 font-light tracking-wide max-w-2xl mx-auto leading-relaxed">
-              Maestría artesanal que trasciende el tiempo.<br />
+            <p className="text-base sm:text-lg md:text-2xl text-gray-300/90 font-light tracking-normal md:tracking-wide max-w-2xl mx-auto leading-relaxed px-2">
+              Maestría artesanal que trasciende el tiempo. <br className="hidden md:block" />
               Elegancia refinada para momentos extraordinarios.
             </p>
 
@@ -163,35 +163,35 @@ export default function FormalView({ products }: { products: Product[] }) {
 
       {/* Barra de filtros sticky premium */}
       <div className="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between py-3 sm:py-4 gap-1">
+            <div className="flex items-center gap-2 sm:gap-6 shrink-0">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 text-sm font-light hover:text-black transition group"
+                className="flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-light hover:text-black transition group shrink-0"
               >
-                <svg className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
                 </svg>
                 <span className="uppercase tracking-wider">Filtros</span>
                 {(filters.genres.length + filters.brands.length) > 0 && (
-                  <span className="ml-1 px-2 py-0.5 bg-black text-white text-xs rounded-full">
+                  <span className="ml-1 px-1.5 py-0.5 bg-black text-white text-[9px] sm:text-xs rounded-full">
                     {filters.genres.length + filters.brands.length}
                   </span>
                 )}
               </button>
 
-              <div className="h-6 w-px bg-gray-200" />
+              <div className="h-4 sm:h-6 w-px bg-gray-200 shrink-0" />
 
-              <span className="text-sm text-gray-500 font-light">
-                {filteredProducts.length} {filteredProducts.length === 1 ? 'producto' : 'productos'}
+              <span className="text-[12px] sm:text-sm text-gray-500 font-light shrink-0">
+                {filteredProducts.length} <span className="hidden sm:inline">{filteredProducts.length === 1 ? 'producto' : 'productos'}</span><span className="sm:hidden">prod.</span>
               </span>
             </div>
 
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "featured" | "price-asc" | "price-desc")}
-              className="text-sm font-light border-0 focus:ring-0 text-gray-700 cursor-pointer bg-transparent"
+              className="text-[12px] sm:text-sm font-light border-0 focus:ring-0 text-gray-700 cursor-pointer bg-transparent px-1 sm:px-3 text-right max-w-[130px] sm:max-w-none"
             >
               <option value="featured">Destacados</option>
               <option value="price-asc">Precio: Ascendente</option>
@@ -264,7 +264,7 @@ export default function FormalView({ products }: { products: Product[] }) {
       </div>
 
       {/* Grid de productos premium */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-32">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-6">
@@ -282,7 +282,7 @@ export default function FormalView({ products }: { products: Product[] }) {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-8 sm:gap-y-12">
             {filteredProducts.map((product) => (
               <FormalProductCard
                 key={product.id}
@@ -292,76 +292,6 @@ export default function FormalView({ products }: { products: Product[] }) {
             ))}
           </div>
         )}
-      </div>
-
-      {/* Sección de valores de marca - Premium */}
-      <div className="border-t border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl text-gray-900 font-light tracking-tight mb-4">La Diferencia</h2>
-            <p className="text-gray-500 font-light max-w-2xl mx-auto">
-              Cada par cuenta una historia de dedicación, precisión y pasión por la perfección
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center space-y-4 group">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-50 to-amber-100 mb-4 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-xl text-gray-900 font-light">Artesanía Excepcional</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                Cada zapato es elaborado a mano por maestros artesanos con décadas de experiencia
-              </p>
-            </div>
-
-            <div className="text-center space-y-4 group">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 mb-4 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-xl text-gray-900 font-light">Materiales Premium</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                Cueros europeos de primera calidad, seleccionados por su durabilidad y belleza natural
-              </p>
-            </div>
-
-            <div className="text-center space-y-4 group">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-50 to-emerald-100 mb-4 group-hover:scale-110 transition-transform">
-                <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-xl text-gray-900 font-light">Diseño Atemporal</h3>
-              <p className="text-sm text-gray-600 font-light leading-relaxed">
-                Siluetas clásicas que trascienden tendencias, una inversión para toda la vida
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA Premium */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-        <div className="max-w-5xl mx-auto px-6 lg:px-8 py-24 text-center">
-          <h2 className="font-serif text-5xl font-light tracking-tight mb-6">
-            Experiencia de Compra Exclusiva
-          </h2>
-          <p className="text-lg text-gray-300 font-light mb-8 max-w-2xl mx-auto leading-relaxed">
-            Agenda una cita privada con nuestros expertos en calzado formal para una experiencia personalizada
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="px-8 py-4 bg-white text-black rounded font-light tracking-wide hover:bg-gray-100 transition">
-              Agendar Cita
-            </button>
-            <button className="px-8 py-4 border border-white/30 rounded font-light tracking-wide hover:bg-white/10 transition">
-              Asesoría Virtual
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

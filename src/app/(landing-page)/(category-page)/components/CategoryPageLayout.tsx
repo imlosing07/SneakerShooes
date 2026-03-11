@@ -116,13 +116,13 @@ export default function CategoryPageLayout({
         <div className="absolute inset-0 z-20 flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div className="text-white max-w-xl">
-              <div className="text-sm font-medium mb-2 tracking-wider">COLECCIÓN</div>
-              <h1 className="text-6xl font-bold mb-4">{heroConfig.title}</h1>
-              <p className="text-xl text-gray-200 mb-6">
+              <div className="text-xs md:text-sm font-medium mb-2 tracking-wider">COLECCIÓN</div>
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 md:mb-4">{heroConfig.title}</h1>
+              <p className="text-base md:text-xl text-gray-200 mb-6">
                 {heroConfig.subtitle}
               </p>
               <div className="flex items-center gap-4">
-                <span className="text-sm">
+                <span className="text-xs md:text-sm">
                   {filteredProducts.length} productos disponibles
                 </span>
               </div>

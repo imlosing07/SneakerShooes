@@ -107,7 +107,7 @@ export default function ClientNavbar() {
             {/* Logo */}
             <Link
               href="/"
-              className="text-xl sm:text-2xl font-bold cursor-pointer flex-shrink-0"
+              className="text-lg sm:text-2xl font-bold cursor-pointer flex-shrink-0 tracking-tight"
             >
               Sneakers<span className="text-gray-500">Hooes</span>
             </Link>
@@ -162,7 +162,7 @@ export default function ClientNavbar() {
               {pathname !== '/buscar' && (
                 <button
                   onClick={toggleSearch}
-                  className="lg:hidden p-2 text-gray-700 hover:text-black transition"
+                  className="lg:hidden p-1.5 sm:p-2 text-gray-700 hover:text-black transition"
                   aria-label="Buscar"
                 >
                   <Search className="w-5 h-5" />
@@ -172,12 +172,12 @@ export default function ClientNavbar() {
               {/* Carrito */}
               <Link
                 href="/carrito"
-                className="relative p-2 text-gray-700 hover:text-black transition"
+                className="relative p-1.5 sm:p-2 text-gray-700 hover:text-black transition"
                 aria-label="Carrito de compras"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  <span className="absolute 0 sm:-top-1 0 sm:-right-1 bg-black text-white text-[10px] sm:text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-medium">
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
@@ -186,12 +186,12 @@ export default function ClientNavbar() {
               {/* Favoritos */}
               <Link
                 href="/favoritos"
-                className="relative p-2 text-gray-700 hover:text-black transition"
+                className="relative p-1.5 sm:p-2 text-gray-700 hover:text-black transition"
                 aria-label="Lista de favoritos"
               >
-                <Heart className={wishlistCount > 0 ? 'fill-red-500 text-red-500' : ''} />
+                <Heart className={wishlistCount > 0 ? 'fill-red-500 text-red-500 w-5 h-5' : 'w-5 h-5'} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  <span className="absolute 0 sm:-top-1 0 sm:-right-1 bg-red-500 text-white text-[10px] sm:text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-medium">
                     {wishlistCount > 99 ? '99+' : wishlistCount}
                   </span>
                 )}
@@ -205,7 +205,7 @@ export default function ClientNavbar() {
                 <div className="relative user-menu-container">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition"
+                    className="flex items-center space-x-2 p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 transition"
                     aria-label="Menú de usuario"
                   >
                     {session.user.image ? (
